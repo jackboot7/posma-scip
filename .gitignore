@@ -1,0 +1,11 @@
+*.pyc
+*.db
+*.swp
+env/
+temp/
+var/
+.directory
+local.py
+*~
+.hg
+.hgignore
