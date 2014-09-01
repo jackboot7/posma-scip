@@ -12,10 +12,15 @@
 
 {% block content %}
 
+    {% if success %}
 
-    <div class="alert alert-success text-center">Registro de llegada exitoso</div>
+        <div class="alert alert-success text-center">Registro de llegada exitoso</div>
 
-    <div class="alert alert-danger text-center">Registro de llegada fallido</div>
+    {% elif fail %}
+
+        <div class="alert alert-danger text-center">Registro de llegada fallido</div>
+
+    {% endif %}
 
     <form class="form-signin" role="form">
 
@@ -24,6 +29,14 @@
 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Llegada</button>
         </div>
+
+        <br>
+        {% if perms.accounts %}
+            <div class="col-sm-12 text-center" >
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Reporte de horas</button>
+            </div>
+
+        {% endif %}
     </form>
 
 
