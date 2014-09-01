@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block menu %}
+
+{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+
+
+
+    <form class="form-signin" role="form" method="get" action="{% url 'registro' %}">
+{#        {% csrf_token %}#}
+
+        <h2 class="form-signin-heading">Ingrese a SICP </h2>
+        <input type="email" class="form-control" placeholder="Email address" required autofocus>
+        <input type="password" class="form-control" placeholder="Password" required>
+        <label class="checkbox">
+            <input type="checkbox" value="remember-me"> Recuerdame
+        </label>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Ingresar</button>
+
+
+    </form>
+
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
