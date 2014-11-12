@@ -1,4 +1,4 @@
-Django==1.7c3
+Django==1.7.1
 Pillow==2.5.3
 Unidecode==0.04.16
 argparse==1.2.1
@@ -12,3 +12,4 @@ python-slugify==0.0.9
 six==1.7.3
 sorl-thumbnail==11.12
 wsgiref==0.1.2
+pytz==2014.9
