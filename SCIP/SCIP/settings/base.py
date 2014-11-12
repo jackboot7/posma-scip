@@ -122,12 +122,12 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 
     # Third party applications/modules
-    'south',
+    'rest_framework',
     'braces',
     'crispy_forms',
 
     # Project applications/modules
-    # 'apps.<module_name>',
+    'apps.organization',
 
 )
 #=============================================================================
@@ -172,4 +172,16 @@ LOGGING = {
             'propagate': True,
         },
     }
+}
+
+
+#=============================================================================
+# REST Framework Settings
+#=============================================================================
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
 }
