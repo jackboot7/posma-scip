@@ -42,3 +42,13 @@ class Workday(models.Model):
         if self.start > self.finish:
             raise ValidationError("Workday start time can't be greater than finish time")
 
+        #overlapping = Workday.objects.user(self.employee.user.username).filter(start__range=(self.start, self.finish))
+        #overlapping2 = Workday.objects.user(self.employee.user.username).filter(finish__range=(self.start, self.finish))
+
+        overlapping = Workday.objects.user(self.employee.user.username).exclude(id=self.id).filter(start__range=(self.start, self.finish))
+        overlapping2 = Workday.objects.user(self.employee.user.username).exclude(id=self.id).filter(finish__range=(self.start, self.finish))
+
+        if overlapping.exists() or overlapping2.exists():
+            print "overlapping = %s" % overlapping.values()
+            print "overlapping2 = %s" % overlapping2.values()
+            raise ValidationError("Specified user has already worked in the given datetime range")
