@@ -1,26 +1,25 @@
-from apps.accounts.forms import LoginForm
-from apps.registro.views import RegistroView
+from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
+from apps.accounts.forms import LoginForm
+
 admin.autodiscover()
 
-urlpatterns = patterns('',
-  
+urlpatterns = patterns(
+    '',
     url(r'^$',
-       'django.contrib.auth.views.login',
-       {'authentication_form': LoginForm},
-       name='login'),
+        'django.contrib.auth.views.login',
+        {'authentication_form': LoginForm},
+        name='login'),
 
     url(r'^logout/',
-       'django.contrib.auth.views.logout',
-       {'next_page': '/'},
-       name='logout'),
+        'django.contrib.auth.views.logout',
+        {'next_page': '/'},
+        name='logout'),
 
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', include(admin.site.urls)),
 )
 
