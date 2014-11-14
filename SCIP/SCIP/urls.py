@@ -20,7 +20,6 @@ urlpatterns = patterns('',
        {'next_page': '/'},
        name='logout'),
 
-    #url(r'^registro/$', RegistroView.as_view(), name='registro'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     url(r'^admin/', include(admin.site.urls)),
 )
