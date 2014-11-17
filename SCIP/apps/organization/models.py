@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib import auth
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 
 
@@ -19,6 +21,26 @@ class Employee(models.Model):
     Application user class.
     """
     user = models.OneToOneField(auth.models.User)
+    birthday = models.DateField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        """
+        Little hack to allow user creation via Admin inline form and still keep the post_save signal
+        """
+        try:
+            existing = Employee.objects.get(user=self.user)
+            self.id = existing.id   # force update instead of insert
+        except Employee.DoesNotExist:
+            pass
+        models.Model.save(self, *args, **kwargs)
+
+    @receiver(post_save, sender=auth.models.User)
+    def create_employee(sender, instance, created, **kwargs):
+        """
+        Method receives signal in order to create corresponding Employee everytime  auth.models.User is created
+        """
+        if created:
+            Employee.objects.get_or_create(user=instance)
 
 
 class Workday(models.Model):

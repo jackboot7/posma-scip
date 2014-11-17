@@ -8,10 +8,19 @@ from django.core.exceptions import ValidationError
 from apps.organization.models import *
 
 
+class EmployeeTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="burrg", email="burrg@harrb.gov", password="posma")
+
+    def test_employee_exists(self):
+        employee = Employee.objects.get(user=self.user)
+        self.assertIsNotNone(employee)
+
+
 class WorkdayTestCase(TestCase):
     def setUp(self):
         user = User.objects.create(username="burrg", email="burrg@harrb.gov", password="posma")
-        self.employee = Employee.objects.create(user=user)
+        self.employee = Employee.objects.get(user=user)
 
     def test_create_workday(self):
         utcnow = datetime.utcnow()
