@@ -13,10 +13,10 @@ class WorkdayManager(models.Manager):
         """
         Limit queryset results by specific user
         """
-        return self.filter(employee__user__username=login)
+        return self.filter(user__username=login)
 
 
-class Employee(models.Model):
+class Profile(models.Model):
     """
     Application user class.
     """
@@ -28,26 +28,26 @@ class Employee(models.Model):
         Little hack to allow user creation via Admin inline form and still keep the post_save signal
         """
         try:
-            existing = Employee.objects.get(user=self.user)
+            existing = Profile.objects.get(user=self.user)
             self.id = existing.id   # force update instead of insert
-        except Employee.DoesNotExist:
+        except Profile.DoesNotExist:
             pass
         models.Model.save(self, *args, **kwargs)
 
     @receiver(post_save, sender=auth.models.User)
-    def create_employee(sender, instance, created, **kwargs):
+    def create_profile(sender, instance, created, **kwargs):
         """
-        Method receives signal in order to create corresponding Employee everytime  auth.models.User is created
+        Method receives signal in order to create corresponding Profile everytime  auth.models.User is created
         """
         if created:
-            Employee.objects.get_or_create(user=instance)
+            Profile.objects.get_or_create(user=instance)
 
 
 class Workday(models.Model):
     """
     A workday represents a succesful session of work, delimited by 'start' and 'finish' timestamps.
     """
-    employee = models.ForeignKey(Employee)
+    user = models.ForeignKey(auth.models.User)
     start = models.DateTimeField()
     finish = models.DateTimeField(blank=True, null=True)
 
@@ -64,9 +64,9 @@ class Workday(models.Model):
         if self.start > self.finish:
             raise ValidationError("Workday start time can't be greater than finish time")
 
-        overlapping = Workday.objects.user(self.employee.user.username).exclude(
+        overlapping = Workday.objects.user(self.user.username).exclude(
             id=self.id).filter(start__range=(self.start, self.finish))
-        overlapping2 = Workday.objects.user(self.employee.user.username).exclude(
+        overlapping2 = Workday.objects.user(self.user.username).exclude(
             id=self.id).filter(finish__range=(self.start, self.finish))
 
         if overlapping.exists() or overlapping2.exists():

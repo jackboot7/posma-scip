@@ -13,9 +13,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name='Profile',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('birthday', models.DateField(null=True, blank=True)),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -27,10 +28,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('start', models.DateTimeField()),
-                ('finish', models.DateTimeField(blank=True)),
-                ('user', models.ForeignKey(to='organization.User')),
+                ('finish', models.DateTimeField(null=True, blank=True)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
             options={
+                'ordering': ['-start'],
             },
             bases=(models.Model,),
         ),

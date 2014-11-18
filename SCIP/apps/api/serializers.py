@@ -1,10 +1,13 @@
+from django.contrib import auth
 from rest_framework import serializers
+
 from apps.organization import models
 
 
-class EmployeeSerializer(serializers.ModelSerializer):  # Employee ?
+class UserSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = models.Employee
+        model = auth.Models.User
 
 
 class WorkdaySerializer(serializers.ModelSerializer):
