@@ -61,7 +61,7 @@ class Workday(models.Model):
         """
         Self validation method
         """
-        if self.start > self.finish:
+        if self.finish is not None and self.start > self.finish:
             raise ValidationError("Workday start time can't be greater than finish time")
 
         overlapping = Workday.objects.user(self.user.username).exclude(
@@ -71,3 +71,6 @@ class Workday(models.Model):
 
         if overlapping.exists() or overlapping2.exists():
             raise ValidationError("Specified user has already worked in the given datetime range")
+
+    def __unicode__(self):
+        return "%s: %s - %s" % (self.user.username, self.start, self.finish)
