@@ -58,8 +58,12 @@ class Workday(models.Model):
         ordering = ['-start']
 
     @property
-    def is_working(self):
-        return True if self.finish is not None else False
+    def hours_worked(self):
+        if self.finish:
+            diff = self.finish - self.start
+            return diff.total_seconds() / 60 / 60
+        else:
+            return None
 
     def clean(self):
         """
