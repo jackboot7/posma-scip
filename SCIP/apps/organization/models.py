@@ -57,6 +57,10 @@ class Workday(models.Model):
     class Meta:
         ordering = ['-start']
 
+    @property
+    def is_working(self):
+        return True if self.finish is not None else False
+
     def clean(self):
         """
         Self validation method
@@ -71,6 +75,7 @@ class Workday(models.Model):
 
         if overlapping.exists() or overlapping2.exists():
             raise ValidationError("Specified user has already worked in the given datetime range")
+
 
     def __unicode__(self):
         return "%s: %s - %s" % (self.user.username, self.start, self.finish)
