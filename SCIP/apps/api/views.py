@@ -166,6 +166,9 @@ class SpecificWorkdayView(APIView):
 
     def put(self, request, pk, format=None):
         workday = self.get_object(pk)
+        if workday.finish:
+            return Response({'detail': "Selected workday has already finished. It can't be edited."},
+                            status=status.HTTP_412_PRECONDITION_FAILED)
         serializer = WorkdaySerializer(workday, data=request.DATA)
         if serializer.is_valid():
             serializer.save()
