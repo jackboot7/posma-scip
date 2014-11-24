@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
+from django.utils.datastructures import MultiValueDict
 
 from apps.organization.models import *
 from apps.api.serializers import *
@@ -55,18 +56,113 @@ class SpecificUserView(APIView):
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)     # ???
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserWorkdaysView(APIView):
+    """
+    /users/{username}/workdays/ endpoint view
+    """
+    def get_object(self, username):
+        try:
+            user = User.objects.get(username=username)
+            return user
+        except User.DoesNotExist:
+            raise Http404
+
+    def get(self, request, username, format=None):
+        workdays = Workday.objects.user(username).all()
+        serializer = WorkdaySerializer(workdays, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, username, format=None):
+        data = MultiValueDict(request.DATA)
+        data['user'] = username
+        serializer = WorkdaySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLastWorkdayView(APIView):
+    """
+    /users/{username}/workdays/last/ endpoint view
+    """
+    def get_object(self, username):
+        try:
+            workday = Workday.objects.user(username).latest('start')
+            return workday
+        except Workday.DoesNotExist:
+            return None
+
+    def get(self, request, username, format=None):
+        serializer = WorkdaySerializer(self.get_object(username))
+        return Response(serializer.data)
+
+    def put(self, request, username, format=None):
+        workday = self.get_object(username)
+        data = MultiValueDict(request.DATA)
+        data['user'] = username
+        serializer = WorkdaySerializer(workday, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, username, format=None):
+        workday = self.get_object(username)
+        try:
+            workday.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class WorkdaysView(APIView):
     """
     Main /workdays/ endpoint API view
     """
-    pass
-    """
     def get(self, request, format=None):
-        pass
+        users = Workday.objects.all()
+        serializer = WorkdaySerializer(users, many=True)
+        return Response(serializer.data)
 
     def post(self, request, format=None):
-        pass
+        serializer = WorkdaySerializer(data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SpecificWorkdayView(APIView):
     """
+    /workdays/{id} endpoint API view
+    """
+    def get_object(self, id):
+        try:
+            return Workday.objects.get(pk=id)
+        except Workday.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        workday = self.get_object(pk)
+        serializer = WorkdaySerializer(workday)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        workday = self.get_object(pk)
+        serializer = WorkdaySerializer(workday, data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        workday = self.get_object(pk)
+        try:
+            workday.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
