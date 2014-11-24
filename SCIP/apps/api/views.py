@@ -71,11 +71,17 @@ class UserWorkdaysView(APIView):
             raise Http404
 
     def get(self, request, username, format=None):
-        workdays = Workday.objects.user(username).all()
+        usr = self.get_object(username)
+        workdays = usr.workday_set.all()
         serializer = WorkdaySerializer(workdays, many=True)
         return Response(serializer.data)
 
     def post(self, request, username, format=None):
+        usr = self.get_object(username)
+        last = usr.workday_set.latest('start')
+        if not last.finish:
+            return Response({'detail': "Last workday hasn't finished yet for given user."},
+                            status=status.HTTP_412_PRECONDITION_FAILED)
         data = MultiValueDict(request.DATA)
         data['user'] = username
         serializer = WorkdaySerializer(data=data)
@@ -93,6 +99,8 @@ class UserLastWorkdayView(APIView):
         try:
             workday = Workday.objects.user(username).latest('start')
             return workday
+        except User.DoesNotExist:
+            raise Http404
         except Workday.DoesNotExist:
             return None
 
@@ -102,12 +110,17 @@ class UserLastWorkdayView(APIView):
 
     def put(self, request, username, format=None):
         workday = self.get_object(username)
+        if workday.finish:
+            return Response({'detail': "Selected workday has already finished. It can't be edited."},
+                            status=status.HTTP_412_PRECONDITION_FAILED)
+
         data = MultiValueDict(request.DATA)
         data['user'] = username
         serializer = WorkdaySerializer(workday, data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, username, format=None):
