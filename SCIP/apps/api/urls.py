@@ -23,5 +23,5 @@ urlpatterns = patterns(
     '',
     url(r'^users', include(users_urls)),
     url(r'^workdays', include(workdays_urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 )
