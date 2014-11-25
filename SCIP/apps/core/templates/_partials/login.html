@@ -1,0 +1,26 @@
+<div class="row">
+    <div class="col-sm-4 col-sm-offset-3"><h1>Login Form</h1></div>
+</div>
+<div class="row">
+    <div class="col-sm-4 col-sm-offset-3">
+        <form class="form-horizontal" role="form" name="login-form" novalidate ng-submit="submitForm();">
+            <div class="form-group">
+                    <label for="username" class="col-sm-4 control-label">Nombre de usuario</label>
+                    <div class="input-group col-sm-8">
+                    <span class="input-group-addon">@</span>
+                        <input type="text" class="form-control" id="username" ng-model="username" placeholder="Nombre de Usuario"/>
+                    </div>
+            </div>
+            <div class="form-group">
+                <label for="password" class="col-sm-4 control-label">Contraseña</label>
+                <div class="input-group col-sm-8">
+                    <span class="input-group-addon">*</span>
+                    <input type="password" class="form-control" id="password" ng-model="password" placeholder="Contraseña"/>
+                </div>
+            </div>
+            <div class="col-sm-offset-4 col-sm-6">
+                <button type="submit" class="btn btn-default">Iniciar Sesión</button>
+            </div>
+        </form>
+    </div>
+</div>

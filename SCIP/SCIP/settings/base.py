@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     # Project applications/modules
     'apps.organization',
     'apps.api',
+    'apps.core',
 
 )
 #=============================================================================
