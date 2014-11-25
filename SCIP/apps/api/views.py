@@ -7,11 +7,12 @@ from django.utils.datastructures import MultiValueDict
 
 from apps.organization.models import *
 from apps.api.serializers import *
+from apps.api.permissions import *
 
 
 class UsersView(APIView):
     """
-    Main /username/ endpoint view
+    Main /users/ endpoint view
     """
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
 
@@ -32,11 +33,13 @@ class SpecificUserView(APIView):
     """
     /users/{username} endpoint view
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
 
     def get_object(self, username):
         try:
-            return User.objects.get(username=username)
+            user = User.objects.get(username=username)
+            self.check_object_permissions(self.request, user)
+            return user
         except User.DoesNotExist:
             raise Http404
 
@@ -69,11 +72,12 @@ class UserWorkdaysView(APIView):
     """
     /users/{username}/workdays/ endpoint view
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
 
     def get_object(self, username):
         try:
             user = User.objects.get(username=username)
+            self.check_object_permissions(self.request, user)
             return user
         except User.DoesNotExist:
             raise Http404
@@ -103,10 +107,12 @@ class UserLastWorkdayView(APIView):
     """
     /users/{username}/workdays/last/ endpoint view
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
 
     def get_object(self, username):
         try:
+            user = User.objects.get(username=username)
+            self.check_object_permissions(self.request, user)
             workday = Workday.objects.user(username).latest('start')
             return workday
         except User.DoesNotExist:
@@ -148,7 +154,7 @@ class WorkdaysView(APIView):
     """
     Main /workdays/ endpoint API view
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
 
     def get(self, request, format=None):
         users = Workday.objects.all()
@@ -167,7 +173,7 @@ class SpecificWorkdayView(APIView):
     """
     /workdays/{id} endpoint API view
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
 
     def get_object(self, id):
         try:
