@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from django.http import Http404
 from django.utils.datastructures import MultiValueDict
 
@@ -13,6 +13,8 @@ class UsersView(APIView):
     """
     Main /username/ endpoint view
     """
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, format=None):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -30,6 +32,8 @@ class SpecificUserView(APIView):
     """
     /users/{username} endpoint view
     """
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get_object(self, username):
         try:
             return User.objects.get(username=username)
@@ -63,6 +67,8 @@ class UserWorkdaysView(APIView):
     """
     /users/{username}/workdays/ endpoint view
     """
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get_object(self, username):
         try:
             user = User.objects.get(username=username)
@@ -95,6 +101,8 @@ class UserLastWorkdayView(APIView):
     """
     /users/{username}/workdays/last/ endpoint view
     """
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get_object(self, username):
         try:
             workday = Workday.objects.user(username).latest('start')
@@ -136,6 +144,8 @@ class WorkdaysView(APIView):
     """
     Main /workdays/ endpoint API view
     """
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, format=None):
         users = Workday.objects.all()
         serializer = WorkdaySerializer(users, many=True)
@@ -153,6 +163,8 @@ class SpecificWorkdayView(APIView):
     """
     /workdays/{id} endpoint API view
     """
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get_object(self, id):
         try:
             return Workday.objects.get(pk=id)

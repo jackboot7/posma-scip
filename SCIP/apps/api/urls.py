@@ -5,7 +5,7 @@ from apps.api.views import *
 
 users_urls = patterns(
     '',
-    url(r'^/$', UsersView.as_view()),
+    url(r'^(/)?$', UsersView.as_view()),
 
     url(r'^/(?P<username>[0-9a-zA-Z_-]+)/workdays/last(/)?$', UserLastWorkdayView.as_view()),
     url(r'^/(?P<username>[0-9a-zA-Z_-]+)/workdays(/)?$', UserWorkdaysView.as_view()),
@@ -22,5 +22,6 @@ workdays_urls = patterns(
 urlpatterns = patterns(
     '',
     url(r'^users', include(users_urls)),
-    url(r'^workdays', include(workdays_urls))
+    url(r'^workdays', include(workdays_urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 )
