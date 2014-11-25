@@ -13,7 +13,11 @@ class WorkdayManager(models.Manager):
         """
         Limit queryset results by specific user
         """
-        return self.filter(user__username=login)
+        try:
+            user = auth.models.User.objects.get(username=login)
+        except auth.models.User.DoesNotExist:
+            raise
+        return self.filter(user=user)
 
 
 class Profile(models.Model):
@@ -72,6 +76,13 @@ class Workday(models.Model):
         if self.finish is not None and self.start > self.finish:
             raise ValidationError("Workday start time can't be greater than finish time")
 
+        try:
+            latest = Workday.objects.user(self.user.username).exclude(id=self.id).latest('start')
+            if not latest.finish:
+                raise ValidationError("Latest workday hasn't finished yet for given user")
+        except Workday.DoesNotExist:
+            pass
+
         overlapping = Workday.objects.user(self.user.username).exclude(
             id=self.id).filter(start__range=(self.start, self.finish))
         overlapping2 = Workday.objects.user(self.user.username).exclude(
@@ -79,7 +90,6 @@ class Workday(models.Model):
 
         if overlapping.exists() or overlapping2.exists():
             raise ValidationError("Specified user has already worked in the given datetime range")
-
 
     def __unicode__(self):
         return "%s: %s - %s" % (self.user.username, self.start, self.finish)
