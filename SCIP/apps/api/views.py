@@ -16,7 +16,7 @@ class UsersView(APIView):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
 
     def get(self, request, format=None):
-        users = User.objects.exclude(is_staff=True)
+        users = User.objects.exclude(is_superuser=True)
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
@@ -54,6 +54,7 @@ class SpecificUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # si no existe debe crearlo y enviar 201
 
+    """
     def delete(self, request, username, format=None):
         user = self.get_object(username)
         try:
@@ -61,6 +62,7 @@ class SpecificUserView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+    """
 
 
 class UserWorkdaysView(APIView):
@@ -131,6 +133,7 @@ class UserLastWorkdayView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    """
     def delete(self, request, username, format=None):
         workday = self.get_object(username)
         try:
@@ -138,6 +141,7 @@ class UserLastWorkdayView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+    """
 
 
 class WorkdaysView(APIView):
@@ -187,6 +191,7 @@ class SpecificWorkdayView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    """
     def delete(self, request, pk, format=None):
         workday = self.get_object(pk)
         try:
@@ -194,3 +199,4 @@ class SpecificWorkdayView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+    """
