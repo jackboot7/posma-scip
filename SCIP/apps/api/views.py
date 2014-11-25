@@ -13,10 +13,10 @@ class UsersView(APIView):
     """
     Main /username/ endpoint view
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
 
     def get(self, request, format=None):
-        users = User.objects.all()
+        users = User.objects.exclude(is_staff=True)
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
