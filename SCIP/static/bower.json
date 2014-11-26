@@ -1,0 +1,27 @@
+{
+  "name": "posma-scip",
+  "version": "0.0.0",
+  "authors": [
+    "Luis Alberto Santana <jackboot7@gmail.com>"
+  ],
+  "description": "Test de AngularJs",
+  "main": "app.js",
+  "keywords": [
+    "test"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angularjs": "~1.3.2",
+    "bootstrap": "~3.3.1",
+    "angular-route": "~1.3.2",
+    "angular-resource": "~1.3.2"
+  }
+}
