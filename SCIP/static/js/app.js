@@ -49,10 +49,3 @@ posmaSCIP.config(['$httpProvider',
         function ($httpProvider){
             $httpProvider.interceptors.push('authInterceptor');
         }]);
-
-posmaSCIP.config(['$rootScope',
-        function ($rootScope){
-            if (!$rootScope.is_logged){
-                $rootScope.is_logged = false;
-            }
-        }]);

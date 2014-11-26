@@ -19,21 +19,17 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
                     $window.sessionStorage.token = data.token;
                     console.log(data.token);
                     console.log(data);
-                    $rootScope.is_logged = true;
                 }, 
                 function(data){
                     console.log("hubo peo");
                     delete $window.sessionStorage.token;
-                    $rootScope.is_logged = false;
                 });
     }
     
     $rootScope.logout = function() { 
             delete $window.sessionStorage.token;
             $location.path('/login');
-            $rootScope.is_logged = false;
     };
-    console.log($rootScope.is_logged);
 
 }]);
 
