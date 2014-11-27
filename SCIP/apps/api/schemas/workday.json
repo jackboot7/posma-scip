@@ -1,0 +1,27 @@
+{
+    "type":"object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "required":false,
+    "properties":{
+        "finish": {
+            "type":["string", "null"],
+            "required":false
+        },
+        "hours_worked": {
+            "type":["number", "null"],
+            "required":false
+        },
+        "id": {
+            "type":"number",
+            "required":false
+        },
+        "start": {
+            "type":"string",
+            "required":true
+        },
+        "user": {
+            "type":"string",
+            "required":false
+        }
+    }
+}

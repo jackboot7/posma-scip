@@ -1,0 +1,53 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "required": true,
+    "properties": {
+        "average_hours_worked": {
+            "type": "number",
+            "required": false
+        },
+        "email": {
+            "type":"string",
+            "required": false
+        },
+        "first_name": {
+            "type": "string",
+            "required": false
+        },
+        "is_working": {
+            "type": "boolean",
+            "required": false
+        },
+        "last_name": {
+            "type": "string",
+            "required": false
+        },
+        "last_workday": {
+            "type": "object",
+            "required": false,
+            "properties": {
+                "finish": {
+                    "type": "string",
+                    "required": false
+                },
+                "hours_worked": {
+                    "type": "number",
+                    "required": false
+                },
+                "id": {
+                    "type": "number",
+                    "required": false
+                },
+                "start": {
+                    "type":"string",
+                    "required": false
+                }
+            }
+        },
+        "username": {
+            "type": "string",
+            "required": true
+        }
+    }
+}
