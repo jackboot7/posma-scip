@@ -11,7 +11,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'v1/auth/login/', 'rest_framework_jwt.views.obtain_jwt_token'),
+    url(r'v1/auth/login/', 'rest_framework_jwt.views.obtain_jwt_token', name="login"),
     url(r'^v1/', include('apps.api.urls')),
     # url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
     url(r'^_partials/(?P<template_name>\w+)$', SimpleStaticView.as_view(), name='partials'),

@@ -90,10 +90,14 @@ class UserWorkdaysView(APIView):
 
     def post(self, request, username, format=None):
         usr = self.get_object(username)
-        last = usr.workday_set.latest('start')
-        if not last.finish:
-            return Response({'detail': "Last workday hasn't finished yet for given user."},
-                            status=status.HTTP_412_PRECONDITION_FAILED)
+        try:
+            last = usr.workday_set.latest('start')
+            if not last.finish:
+                return Response({'detail': "Last workday hasn't finished yet for given user."},
+                                status=status.HTTP_412_PRECONDITION_FAILED)
+        except Workday.DoesNotExist:
+            pass
+
         data = MultiValueDict(request.DATA)
         data['user'] = username
         serializer = WorkdaySerializer(data=data)
@@ -166,7 +170,7 @@ class WorkdaysView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_412_PRECONDITION_FAILED)
 
 
 class SpecificWorkdayView(APIView):
