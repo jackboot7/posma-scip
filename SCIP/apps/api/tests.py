@@ -5,6 +5,7 @@ from datetime import timedelta
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from rest_framework_jwt import utils
 from rest_framework.renderers import JSONRenderer
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -125,103 +126,139 @@ class WorkdaySerializerTestCase(TestCase):
 
 class EndpointsTest(TestCase):
     def setUp(self):
-        self.client = APIClient()
         self.admin = User.objects.create_superuser(username="admin", password="posma123", email="a@b.com")
-        # login using JWT
-        """
+        self.client = APIClient(enforce_csrf_checks=True)
+        # self.client.login(username='admin', password="posma123")
+
+        # authenticate using JWT
         response = self.client.post(reverse('login'),
-                                    {"username": "dummy", "password": "posma123"},
+                                    {"username": "admin", "password": "posma123"},
                                     format="json")
-        self.token = response.data['token']
-        """
-        self.client.login(username='admin', password="posma123")
+        token = response.data['token']
+        self.assertTrue(token)
+        self.auth = 'JWT {0}'.format(token)
+
+    def test_authentication(self):
+        self.assertTrue(self.auth)
 
     def test_user_list(self):
         # GET method
         UserFactory.create_batch(4)
         url = reverse('user_list')
-        response = self.client.get(url)
-        validate_json_schema("users", response.data)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("users", response.data))
         self.assertEqual(len(response.data), 4)
+        response = self.client.get(url)     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # POST method
         self.client.post(url, {"username": "jackboot7",
                                "first_name": "Luis",
                                "last_name": "Santana",
-                               "email": "luis.santana@gmail.com"})
-        response = self.client.get(url)
+                               "email": "luis.santana@gmail.com"}, HTTP_AUTHORIZATION=self.auth)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(len(response.data), 5)
+        response = self.client.post(url, {})    # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_user_detail(self):
         # GET method
         UserFactory(username="ospa", first_name="Oscar")
         url = reverse('user_detail', kwargs={'username': "ospa"})
-        response = self.client.get(url)
-        validate_json_schema("user", response.data)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("user", response.data))
         self.assertEqual(response.data['first_name'], "Oscar")
+        response = self.client.get(url) # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # PUT method
-        response = self.client.put(url, {'username': "ospa", 'first_name': "Bob"})
+        response = self.client.put(url, {'username': "ospa", 'first_name': "Bob"}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['first_name'], "Bob")
+        response = self.client.put(url, {})     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_user_workday_list(self):
         # POST method
         UserFactory.create(username="jackboot7")
         url = reverse('user_workday_list', kwargs={'username': "jackboot7"})
-        response = self.client.post(url, {})
+        response = self.client.post(url, {})    # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.post(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Invalid workday creation
-        response = self.client.post(url, {})
+        response = self.client.post(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
 
         # GET method
-        response = self.client.get(url)
-        validate_json_schema("workdays", response.data)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("workdays", response.data))
+        response = self.client.get(url)     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_user_last_workday(self):
         # GET method
         user = UserFactory(username="cbruguera")
         WorkdayFactory.create(user=user)
         url = reverse('user_last_workday', kwargs={'username': "cbruguera"})
-        response = self.client.get(url)
-        validate_json_schema("workday", response.data)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("workday", response.data))
+        response = self.client.get(url)     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # PUT method
-        response = self.client.put(url, {})
+        response = self.client.put(url, {})     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsInstance(response.data['finish'], datetime)
 
         # Invalid workday editing
-        response = self.client.put(url, {})
+        response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
 
     def test_workday_list(self):
         # POST method
         UserFactory.create(username="cbruguera")
         url = reverse('workday_list')
-        response = self.client.post(url, {'user': "cbruguera"})
+        response = self.client.post(url, {})     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.post(url, {'user': "cbruguera"}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Invalid workday creation
-        response = self.client.post(url, {'user': "cbruguera"})
+        response = self.client.post(url, {'user': "cbruguera"}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
 
         # GET method
-        response = self.client.get(url)
-        validate_json_schema("workdays", response.data)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("workdays", response.data))
+        response = self.client.get(url)     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_workday_detail(self):
         # GET method
         user = UserFactory.create(username="cbruguera")
         wd = WorkdayFactory(user=user)
         url = reverse('workday_detail', kwargs={'pk': wd.id})
-        response = self.client.get(url)
-        validate_json_schema("workday", response.data)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("workday", response.data))
+        response = self.client.get(url)     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # PUT method
         response = self.client.put(url, {'user': "cbruguera"})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.put(url, {'user': "cbruguera"}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Invalid editing
-        response = self.client.put(url, {'user': "cbruguera"})
+        response = self.client.put(url, {'user': "cbruguera"}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
