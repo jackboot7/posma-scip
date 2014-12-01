@@ -15,9 +15,18 @@ from apps.api.views import *
 
 
 def validate_json_schema(schema_name, data):
+    """
+    Validates JSON data for a given schema, defined as a .json file in the "schemas" folder
+    """
     schema_file = open("apps/api/schemas/%s.json" % schema_name).read()
     json_data = JSONRenderer().render(data)
-    validate(json.loads(json_data), json.loads(schema_file))
+    validate(json.loads(json_data), json.loads(schema_file))    # Raises ValidationError
+    return True
+
+
+#=============================================================================
+# Model Factories
+#=============================================================================
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -46,6 +55,7 @@ class WorkdayFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     start = factory.LazyAttribute(lambda a: datetime.utcnow().replace(tzinfo=pytz.utc))
 
+
 #=============================================================================
 # Serializers Test Cases
 #=============================================================================
@@ -53,22 +63,29 @@ class WorkdayFactory(factory.django.DjangoModelFactory):
 
 class UserSerializerTestCase(TestCase):
     def setUp(self):
-        self.users = UserFactory.build_batch(3)
+        self.users = UserFactory.create_batch(3)
 
-    def test_users_schema(self):
+    def test_user_serialization(self):
         users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        try:
-            validate_json_schema("users", serializer.data)
-        except ValidationError, exc:
-            self.fail(exc)
 
-    def test_user_schema(self):
-        serializer = UserSerializer(self.users[0])
-        try:
-            validate_json_schema("user", serializer.data)
-        except ValidationError, exc:
-            self.fail(exc)
+        # Single object serialization
+        serializer = UserSerializer(users[0])
+        self.assertEqual(type(serializer), UserSerializer)
+        self.assertTrue(validate_json_schema("user", serializer.data))
+
+        # Muliple objects serialization
+        serializer = UserSerializer(users, many=True)
+        self.assertEqual(type(serializer), UserSerializer)
+        self.assertTrue(validate_json_schema("users", serializer.data))
+
+    def test_user_deserialization(self):
+        serializer = UserSerializer(data={'username': "ospa",
+                                          'password': "holis123",
+                                          'first_name': "Oscar",
+                                          'last_name': "Paredes"})
+
+        self.assertTrue(serializer.is_valid())
+        self.assertIsInstance(serializer.save(), User)
 
 
 class WorkdaySerializerTestCase(TestCase):
@@ -79,24 +96,27 @@ class WorkdaySerializerTestCase(TestCase):
         self.work1 = WorkdayFactory(user=self.user1)
         self.work2 = WorkdayFactory(user=self.user2)
 
-    def test_workday_schema(self):
-        serializer = WorkdaySerializer(self.work1)
-        try:
-            validate_json_schema("workday", serializer.data)
-            # update finish time and validate again
-            self.work1.finish = self.work1.start + timedelta(hours=9)
-            serializer = WorkdaySerializer(self.work1)
-            validate_json_schema("workday", serializer.data)
-        except ValidationError, exc:
-            self.fail(exc)
-
-    def test_workdays_schema(self):
+    def test_workday_serialization(self):
         workdays = Workday.objects.all()
+
+        # Single object serialization
+        serializer = WorkdaySerializer(workdays[0])
+        self.assertEqual(type(serializer), WorkdaySerializer)
+        self.assertTrue(validate_json_schema("workday", serializer.data))
+
+        # Muliple objects serialization
         serializer = WorkdaySerializer(workdays, many=True)
-        try:
-            validate_json_schema("workdays", serializer.data)
-        except ValidationError, exc:
-            self.fail(exc)
+        self.assertEqual(type(serializer), WorkdaySerializer)
+        self.assertEqual(len(serializer.data), 2)
+        self.assertTrue(validate_json_schema("workdays", serializer.data))
+
+    def test_workday_deserialization(self):
+        UserFactory.create(username="joe")
+        serializer = WorkdaySerializer(data={"user": "joe", 
+                                             "start": "2014-03-13 09:30:07"})
+        self.assertTrue(serializer.is_valid())
+        self.assertIsInstance(serializer.save(), Workday)
+
 
 #=============================================================================
 # API Views Test Cases
