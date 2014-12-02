@@ -33,7 +33,7 @@ class WorkdaySerializer(serializers.ModelSerializer):
             # Update existing instance
             instance.finish = utcnow
             username = attrs.get('user', "")
-            if username:
+            if username and not instance.user:
                 user = auth.models.User.objects.get(username=username)
                 instance.user = user
 

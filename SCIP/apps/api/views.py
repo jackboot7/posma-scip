@@ -163,13 +163,15 @@ class WorkdaysView(APIView):
     def get(self, request, format=None):
         users = Workday.objects.all()
         serializer = WorkdaySerializer(users, many=True)
+        
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = WorkdaySerializer(data=request.DATA)
+        serializer = WorkdaySerializer(data=request.DATA)        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_412_PRECONDITION_FAILED)
 
 
@@ -177,11 +179,14 @@ class SpecificWorkdayView(APIView):
     """
     /workdays/{id} endpoint API view
     """
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
 
     def get_object(self, id):
         try:
-            return Workday.objects.get(pk=id)
+            workday = Workday.objects.get(pk=id)
+            user = workday.user
+            self.check_object_permissions(self.request, user)
+            return workday
         except Workday.DoesNotExist:
             raise Http404
 

@@ -124,9 +124,9 @@ class WorkdaySerializerTestCase(TestCase):
 #=============================================================================
 
 
-class EndpointsTest(TestCase):
+class SuperuserEndpointsTest(TestCase):
     def setUp(self):
-        self.admin = User.objects.create_superuser(username="admin", password="posma123", email="a@b.com")
+        User.objects.create_superuser(username="admin", password="posma123", email="a@b.com")
         self.client = APIClient(enforce_csrf_checks=True)
         # self.client.login(username='admin', password="posma123")
 
@@ -261,4 +261,137 @@ class EndpointsTest(TestCase):
 
         # Invalid editing
         response = self.client.put(url, {'user': "cbruguera"}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
+
+
+class UserEndpointsTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="non_admin", password="posma123", email="a@b.com")
+        self.user.save()
+        self.client = APIClient(enforce_csrf_checks=True)
+
+        # authenticate using JWT
+        response = self.client.post(reverse('login'),
+                                    {"username": "non_admin", "password": "posma123"},
+                                    format="json")
+        token = response.data['token']
+        self.assertTrue(token)
+        self.auth = 'JWT {0}'.format(token)
+
+    def test_authentication(self):
+        self.assertTrue(self.auth)
+
+    def test_user_list(self):
+        # GET method (Unauthorized)
+        UserFactory.create_batch(4)
+        url = reverse('user_list')
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # POST method (Unauthorized)
+        self.client.post(url, {"username": "jackboot7",
+                               "first_name": "Luis",
+                               "last_name": "Santana",
+                               "email": "luis.santana@gmail.com"}, HTTP_AUTHORIZATION=self.auth)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_user_detail(self):
+        # Unauthorized access
+        UserFactory(username="ospa", first_name="Oscar")
+        url = reverse('user_detail', kwargs={'username': "ospa"})
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        
+        # GET method
+        url = reverse('user_detail', kwargs={'username': "non_admin"})
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # PUT method
+        response = self.client.put(url, {'username': "non_admin", 'first_name': "Bob"}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['first_name'], "Bob")
+
+    def test_user_workday_list(self):
+        # Unauthorized access
+        UserFactory.create(username="jackboot7")
+        url = reverse('user_workday_list', kwargs={'username': "jackboot7"})
+        response = self.client.post(url, {}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        
+        # POST method
+        url = reverse('user_workday_list', kwargs={'username': "non_admin"})
+        response = self.client.post(url, {}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Invalid workday creation
+        response = self.client.post(url, {}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
+
+        # GET method
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("workdays", response.data))
+        response = self.client.get(url)     # Unauthorized access
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_user_last_workday(self):
+        # Unauthorized access
+        UserFactory(username="cbruguera")
+        url = reverse('user_last_workday', kwargs={'username': "cbruguera"})
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # GET method
+        WorkdayFactory.create(user=self.user)
+        url = reverse('user_last_workday', kwargs={'username': "non_admin"})
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("workday", response.data))
+
+        # PUT method
+        response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data['finish'], datetime)
+
+        # Invalid workday editing
+        response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
+
+    def test_workday_list(self):
+        url = reverse('workday_list')
+        # Unauthorized access
+        response = self.client.post(url, {'user': "non_admin"}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # GET method (Unauthorized)
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_workday_detail(self):
+        # Unauthorized access
+        user = UserFactory.create(username="cbruguera")
+        wd = WorkdayFactory(user=user)
+        url = reverse('workday_detail', kwargs={'pk': wd.id})
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # GET method
+        wd = WorkdayFactory(user=self.user)
+        url = reverse('workday_detail', kwargs={'pk': wd.id})
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(validate_json_schema("workday", response.data))
+
+        # PUT method
+        response = self.client.put(url, {'user': "non_admin"}, HTTP_AUTHORIZATION=self.auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Invalid editing
+        response = self.client.put(url, {'user': "non_admin"}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)

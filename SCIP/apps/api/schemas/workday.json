@@ -8,7 +8,7 @@
             "required":false
         },
         "hours_worked": {
-            "type":["number", "null"],
+            "type":["number", "null", "string"],
             "required":false
         },
         "id": {
