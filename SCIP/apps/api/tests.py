@@ -1,11 +1,8 @@
 import json
 import factory
-from datetime import timedelta
 
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from rest_framework_jwt import utils
 from rest_framework.renderers import JSONRenderer
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -124,7 +121,7 @@ class WorkdaySerializerTestCase(TestCase):
 #=============================================================================
 
 
-class SuperuserEndpointsTest(TestCase):
+class SuperuserAPITest(TestCase):
     def setUp(self):
         User.objects.create_superuser(username="admin", password="posma123", email="a@b.com")
         self.client = APIClient(enforce_csrf_checks=True)
@@ -264,7 +261,7 @@ class SuperuserEndpointsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED)
 
 
-class UserEndpointsTest(TestCase):
+class UserAPITest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="non_admin", password="posma123", email="a@b.com")
         self.user.save()
