@@ -16,6 +16,10 @@ posmaSCIP.config(['$routeProvider','$locationProvider',
                 templateUrl: '/_partials/login',
                 controller: 'LoginController'
             }).
+            when('/logout', {
+                templateUrl: '/_partials/hello',
+                controller: 'LoginController'
+            }).
             when('/checkin', {
                 templateUrl: '/_partials/checkin',
                 controller: 'CheckinController'
@@ -27,11 +31,11 @@ posmaSCIP.config(['$routeProvider','$locationProvider',
             when('/workdays', {
                 templateUrl: '/_partials/workdays',
                 controller: 'WorkdayListController'
+            }).
+            otherwise({
+                templateUrl: '/_partials/hello',
+                controller: 'MainController'
             });
-            //otherwise({
-            //    templateUrl: '/_partials/hello',
-            //    controller: 'MainController'
-            //});
             $locationProvider.html5Mode(true);
     }]);
 
@@ -39,4 +43,9 @@ posmaSCIP.config(['$resourceProvider',
         function($resourceProvider) {
             // Don't strip trailing slashes from calculated URLs
             $resourceProvider.defaults.stripTrailingSlashes = false;
+        }]);
+
+posmaSCIP.config(['$httpProvider',
+        function ($httpProvider){
+            $httpProvider.interceptors.push('authInterceptor');
         }]);

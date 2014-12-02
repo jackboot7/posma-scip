@@ -1,26 +1,36 @@
 var scipControllers = angular.module('scipControllers', ['ngResource']);
 
-scipControllers.controller('MainController', function($scope, $route, $routeParams, $location){
+scipControllers.controller('MainController', function($scope, $route, $routeParams, $rootScope, $location){
     console.log($routeParams);
     console.log("inicio?");
+    console.log($rootScope.is_logged);
+    console.log($rootScope);
+    console.log($location);
 
 });
 
-scipControllers.controller('LoginController', ['$scope', 'Login', function($scope, Login){
+scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope', '$location', 'Login', function($scope, $window, $rootScope, $location, Login){
     console.log("En LoginController");
-    $scope.submitForm = function() {
 
-        console.log("Se hizo click en el submit del formulario de login");
-
+    $scope.login = function() {
         Login.post(
                 {username:$scope.username, password:$scope.password},
                 function(data){
+                    $window.sessionStorage.token = data.token;
+                    console.log(data.token);
                     console.log(data);
                 }, 
                 function(data){
                     console.log("hubo peo");
+                    delete $window.sessionStorage.token;
                 });
     }
+    
+    $rootScope.logout = function() { 
+            delete $window.sessionStorage.token;
+            $location.path('/login');
+    };
+
 }]);
 
 scipControllers.controller('CheckinController', function($scope){
@@ -45,6 +55,7 @@ scipControllers.controller('UserListController', ['$scope', 'Users', function($s
                 // callback de error.
                 console.log("error?");
             });
+    console.log($rootScope.is_logged);
 }]);
 
 
