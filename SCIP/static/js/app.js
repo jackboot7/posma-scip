@@ -2,27 +2,20 @@
 
 var posmaSCIP = angular.module('posmaSCIP', ['ngRoute', 'scipServices', 'scipControllers']);
 
-//posmaSCIP.config(['$httpProvider',
-//        function($httpProvider) {
-//            //Enable cross domain calls
-//            $httpProvider.defaults.useXDomain = true;
-//            delete $httpProvider.defaults.headers.common['X-Requested-With'];
-//        }]);
-
 posmaSCIP.config(['$routeProvider','$locationProvider',
     function($routeProvider, $locationProvider){
         $routeProvider.
-            when('/login', {
-                templateUrl: '/_partials/login',
-                controller: 'LoginController'
-            }).
-            when('/logout', {
-                templateUrl: '/_partials/hello',
-                controller: 'LoginController'
+            when('/', {
+                templateUrl: '/_partials/checkin',
+                controller: 'CheckinController'
             }).
             when('/checkin', {
                 templateUrl: '/_partials/checkin',
                 controller: 'CheckinController'
+            }).
+            when('/login', {
+                templateUrl: '/_partials/login',
+                controller: 'LoginController'
             }).
             when('/users/', {
                 templateUrl: '/_partials/users',
@@ -33,8 +26,8 @@ posmaSCIP.config(['$routeProvider','$locationProvider',
                 controller: 'WorkdayListController'
             }).
             otherwise({
-                templateUrl: '/_partials/hello',
-                controller: 'MainController'
+                templateUrl: '/_partials/404',
+                controller: '404Controller'
             });
             $locationProvider.html5Mode(true);
     }]);
@@ -49,3 +42,22 @@ posmaSCIP.config(['$httpProvider',
         function ($httpProvider){
             $httpProvider.interceptors.push('authInterceptor');
         }]);
+
+posmaSCIP.run(['$rootScope', '$window', '$location', function($rootScope, $window, $location){
+    // se obtiene el token del usuario, y se carga su estado en el scope para toda la app.
+    if ($window.sessionStorage.token){
+        $rootScope.logged = true;
+    }else{
+        $rootScope.logged = false;
+    }
+
+    // se configura una función para cerrar sesión.
+    $rootScope.logout = function() { 
+            delete $window.sessionStorage.token;
+            $rootScope.logged = false;
+            $location.path('/login');
+        };
+}]);
+
+
+
