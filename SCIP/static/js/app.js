@@ -21,10 +21,14 @@ posmaSCIP.config(['$routeProvider','$locationProvider',
                 templateUrl: '/_partials/users',
                 controller: 'UserListController'
             }).
-            when('/workdays', {
+            when('/users/:username/', {
                 templateUrl: '/_partials/workdays',
                 controller: 'WorkdayListController'
             }).
+           // when('/workdays', {
+           //     templateUrl: '/_partials/workdays',
+           //     controller: 'WorkdayListController'
+           //  }).
             otherwise({
                 templateUrl: '/_partials/404',
                 controller: '404Controller'

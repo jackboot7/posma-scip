@@ -9,6 +9,7 @@
                 <th>Horas (-1hr)</th>
 
             </tr>
+            {{ workdays }}
             <tr ng-repeat="workday in workdays">
                 <td>{{ workday.start | date}}</td>
                 <td>{{ workday.finish | date}}</td>

@@ -76,16 +76,17 @@ scipControllers.controller('UserListController', ['$scope', '$rootScope', '$loca
 }]);
 
 
-scipControllers.controller('WorkdayListController', ['$scope', '$rootScope', '$location', 'Workdays', function($scope, $rootScope, $location, Workdays){
-    // De momento se cablea una estructura de jornadas de trabajo, en un futuro será obtenida desde el servicio.
+scipControllers.controller('WorkdayListController', ['$scope', '$rootScope', '$location', '$routeParams', 'Workdays', 
+        function($scope, $rootScope, $location, $routeParams, Workdays){
         
     console.log("En WorkdayListController");
     if ($rootScope.logged){
-        Workdays.get({},
+
+        Workdays.get({username:$routeParams.username},
                 function(data){
-                    $scope.workdays = data;
+                    console.log($routeParams.username);
                     console.log(data);
-                    console.log(data[0].start);
+                    $scope.workdays = data;
                 },
                 function(data){
                     // caso de error, por ejemplo 403
