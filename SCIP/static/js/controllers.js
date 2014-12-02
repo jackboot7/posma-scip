@@ -14,7 +14,7 @@ scipControllers.controller('404Controller', function($scope, $window, $route, $r
 
 });
 
-scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope', '$location', 'Login', function($scope, $window, $rootScope, $location, Login){
+scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope', '$location', 'Login', 'User', function($scope, $window, $rootScope, $location, Login, User){
     console.log("En LoginController");
 
     $scope.login = function() {
@@ -23,13 +23,28 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
 
                 function(data){
                     $window.sessionStorage.token = data.token;
+                    User.get(
+                        {username:$scope.username},
+
+                        function(data){
+                            $window.sessionStorage.user = data
+                        },
+                        function(data){
+                            console.log("problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
+                            delete $window.sessionStorage.token;
+                            delete $window.sessionStorage.user;
+                            $rootScope.logged = false;
+                        });
+
                     $rootScope.logged = true;
                     $location.path('/');
+
                 }, 
 
                 function(data){
                     console.log("problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
                     delete $window.sessionStorage.token;
+                    delete $window.sessionStorage.user;
                     $rootScope.logged = false;
                     // problema con la conexión con el API. 
                     // Mostrar mensaje de error y redireccionar.

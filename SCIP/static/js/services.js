@@ -29,11 +29,18 @@ scipServices.factory('Login', ['$resource', function($resource){
 
 
 scipServices.factory('Users', ['$resource', function($resource){
-        // implementa el servicio para obtener el listado de usuarios
-        return $resource('/v1/users/', {}, {
-            get: { params:{}, isArray:true}
+    // implementa el servicio para obtener el listado de usuarios
+    return $resource('/v1/users/', {}, {
+        get: { params:{}, isArray:true}
 
-        });
+    });
+}]);
+
+scipServices.factory('User', ['$resource', function($resource){
+    // implementa el servicio para obtener los datos de un usuario
+    return $resource('/v1/users/:username/', {username:'@username'}, {
+        get: { params:{}, isArray:false}
+    });
 }]);
 
 scipServices.factory('Checkin', ['$resource', function($resource){
