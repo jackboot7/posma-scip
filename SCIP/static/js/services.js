@@ -57,7 +57,9 @@ scipServices.factory('Checkin', ['$resource', function($resource){
     });
 }]);
 
-
 scipServices.factory('Workdays', ['$resource', function($resource){
-        // implementa el servicio para obtener el listado de workdays
+    // implementa el servicio para obtener el listado de workdays
+    return $resource('v1/workdays/', {}, {
+        get: { params:{}, isArray:true}
+    });
 }]);

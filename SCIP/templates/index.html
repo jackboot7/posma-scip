@@ -35,8 +35,8 @@
             <!-- Enlace de inicio de sesión/menu de usuario -->
             <div class="collapse navbar-collapse" id="menu-colapsado">
                   <ul class="nav navbar-nav navbar-right">
-                    <li ng-show="is_logged" ><a href="/login/">Iniciar Sesión en Posma</a></li>
-                    <li ng-hide="is_logged" ng-click='logout()' ><a href="/logout/">Cerrar Sesión</a></li>
+                    <li ng-hide="logged" ><a href="/login/">Iniciar Sesión en Posma</a></li>
+                    <li ng-show="logged" ng-click='logout()' ><a href="#">Cerrar Sesión</a></li>
                   </ul>
             </div>
         </div>
