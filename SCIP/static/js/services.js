@@ -48,7 +48,7 @@ scipServices.factory('Checkin', ['$resource', function($resource){
     // v1/users/:username/workdays
     // para hacer update de un workdate, dado el usuario (:username)
     // v1/users/{username}/workdays/last
-    return $resource('/v1/users/:username/workdays', {username:'@username'}, {
+    return $resource('/v1/users/:username/workdays/', {username:'@username'}, {
         checkin: {
             method:'POST',
             isArray: false,
@@ -66,7 +66,7 @@ scipServices.factory('Checkin', ['$resource', function($resource){
 
 scipServices.factory('Workdays', ['$resource', function($resource){
     // implementa el servicio para obtener el listado de workdays
-    return $resource('v1/workdays/', {}, {
+    return $resource('v1/users/:username/workdays', {}, {
         get: { params:{}, isArray:true}
     });
 }]);
