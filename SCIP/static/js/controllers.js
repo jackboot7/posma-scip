@@ -27,7 +27,9 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
                         {username:$scope.username},
 
                         function(data){
-                            $window.sessionStorage.user = data
+                            //$window.sessionStorage.user = JSON.stringify(data);
+                            //console.log(JSON.stringify(data));
+                            $window.sessionStorage.user = JSON.stringify(data);
                         },
                         function(data){
                             console.log("problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
@@ -53,12 +55,15 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
 
 }]);
 
-scipControllers.controller('CheckinController',['$scope', '$rootScope', '$location', function($scope, $rootScope, $location){
+scipControllers.controller('CheckinController',['$scope', '$rootScope', '$location', '$window', function($scope, $rootScope, $location, $window){
     console.log("En CheckinController");
     if(!$rootScope.logged){
         $location.path('/login');
     }
-    console.log($rootScope.logged);
+    console.log($window.sessionStorage.user);
+    $scope.user = angular.fromJson($window.sessionStorage.user);
+    console.log("hola " + $scope.user['username']);
+    
     // Se obtienen los datos del usuario logueado actualmente
     // Users.get(username);
     // Para ese usuario logueado: 
@@ -73,7 +78,7 @@ scipControllers.controller('UserListController', ['$scope', '$rootScope', '$loca
     console.log($rootScope.logged);
     if ($rootScope.logged){
         // La conexión con el API se hace sólo para usuarios loggeados.
-        Users.get(    
+        Users.get(
                 function(data){
                     // caso exitoso.
                     $scope.users = data;
