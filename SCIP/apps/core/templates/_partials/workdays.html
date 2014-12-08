@@ -1,6 +1,6 @@
 <div class="row">
 {% verbatim %}
-<div class="col-sm-8 col-sm-offset-2"><h1>Movimientos para {{ username }} ok?</h1></div>
+<div class="col-sm-8 col-sm-offset-2"><h1>Movimientos para {{ username }}</h1></div>
 {% endverbatim %}
 
     <div class="col-sm-8 col-sm-offset-2">
@@ -12,10 +12,11 @@
 
             </tr>
             {% verbatim %}
-            {{ workdays }}
             <tr ng-repeat="workday in workdays">
-                <td>{{ workday.start | date}}</td>
-                <td>{{ workday.finish | date}}</td>
+                <td>{{ workday.start | date }}</td>
+                <td>{{ workday.start | date:'shortTime'}}</td>
+                <td>{{ workday.finish | date:'shortTime'}}</td>
+                <td>{{ workday.hours_worked | number:2 }}</td>
                 <td></td>
             </tr>
             {% endverbatim %}
