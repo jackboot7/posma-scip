@@ -55,7 +55,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = auth.models.User
-        fields = ('username', 'first_name', 'last_name', 'email', 'last_workday', 'is_working', 'average_hours_worked')
+        fields = ('username', 'first_name', 'last_name', 'email', 'last_workday', 'is_working', 'average_hours_worked',
+                  'is_staff')
 
     def get_last_workday(self, obj):
         try:
