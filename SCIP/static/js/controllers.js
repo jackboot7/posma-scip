@@ -46,20 +46,58 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
 
 }]);
 
-scipControllers.controller('CheckinController',['$scope', '$rootScope', '$location', '$window', function($scope, $rootScope, $location, $window){
+scipControllers.controller('CheckinController',['$scope', '$rootScope', '$location', '$window', 'User', 'Checkin',  
+        function($scope, $rootScope, $location, $window, User, Checkin){
+
     console.log("En CheckinController");
     if(!$rootScope.logged){
         $location.path('/login');
+    }else{
+        var username = JSON.parse($window.sessionStorage.user).username;
+        User.get( {username:username},
+                function(data){ 
+                   // success
+                   $scope.checked = data.is_working;
+                   $scope.checkin = function(){
+                       console.log("scope.checked " + $scope.checked);
+                        // se  verifica el estado actual del usuario.
+                        // se hace la llamada al api. para hacer checkin o checkout del usuario dependiendo del caso.
+                        if(!$scope.checked){
+                            // Llamada al API para hacer checkin
+                            // Si el usuario no ha hecho checkin, se muestra el botón y se usa Checkin.checkin()
+                            //
+                            Checkin.checkin({username:username},
+                                    function(data){
+                                        // éxito en checkin
+                                        console.log(data);
+                                        $scope.checked = !$scope.checked;
+                                    },
+                                    function(data){
+                                        // fail en el checkin
+                                        console.log("fail: " + data);
+                                    });
+
+                        }else{
+                            // Llamada al API para hacer checkout
+                            // Si el usuario ya está trabajando, se muestra el segundo botón y se usa Checkin.checkout()
+                            Checkin.checkout({username:username},
+                                    function(data){
+                                        // éxito en checkin
+                                        console.log(data);
+                                        $scope.checked = !$scope.checked;
+                                    },
+                                    function(data){
+                                        // fail en el checkin
+                                        console.log("fail: " + data);
+                                    });
+
+                        }
+                    }
+                },
+                function(data){
+                    console.log("Error en la llamada al API.");
+                });
     }
-
-    $scope.user = JSON.parse($window.sessionStorage.user);
-    // Se obtienen los datos del usuario logueado actualmente
-    // Users.get(username);
-    // Para ese usuario logueado: 
-    //     - si el usuario no ha hecho checkin, se muestra el botón y se usa Checkin.checkin()
-    //     - si el usuario ya está trabajando, se muestra el segundo botón y se usa Checkin.checkout()
-    //
-
 }]);
 
 
@@ -94,9 +132,9 @@ scipControllers.controller('WorkdayListController', ['$scope', '$rootScope', '$l
         
     console.log("En WorkdayListController");
     if ($rootScope.logged){
-
         Workdays.get({username:$routeParams.username},
                 function(data){
+                    $scope.username = $routeParams.username;
                     console.log($routeParams.username);
                     console.log(data);
                     $scope.workdays = data;
