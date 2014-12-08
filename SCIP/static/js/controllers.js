@@ -17,30 +17,31 @@ scipControllers.controller('404Controller', function($scope, $window, $route, $r
 scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope', '$location', 'Login', 'User', 'jwtHelper', function($scope, $window, $rootScope, $location, Login, User, jwtHelper){
     console.log("En LoginController");
 
-    if ($rootScope.logged){
-        // if is already logged in, we redirect the user to the root page.
-        $location.path('/');
-    }else{
-        $scope.login = function() {
-            Login.post(
-                    {username:$scope.username, password:$scope.password},
+    $scope.login = function() {
+        Login.post(
+                {username:$scope.username, password:$scope.password},
 
-                    function(data){
-                        $window.sessionStorage.token = data.token;
-                        $window.sessionStorage.user = JSON.stringify(jwtHelper.decodeToken(data.token));
-                        $rootScope.logged = true;
-                        $location.path('/');
-                    }, 
+                function(data){
+                    var user_obj = jwtHelper.decodeToken(data.token)
 
-                    function(data){
-                        console.log("problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
-                        delete $window.sessionStorage.token;
-                        delete $window.sessionStorage.user;
-                        $rootScope.logged = false;
-                        // problema con la conexión con el API. 
-                        // Mostrar mensaje de error y redireccionar.
-                    });
-        }
+                    $window.sessionStorage.token = data.token;
+                    $window.sessionStorage.user = JSON.stringify(user_obj);
+
+                    $rootScope.logged = true;
+                    $rootScope.is_staff = user_obj.is_staff;
+                    $location.path('/');
+
+                }, 
+
+                function(data){
+                    console.log("problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
+                    delete $window.sessionStorage.token;
+                    delete $window.sessionStorage.user;
+                    $rootScope.logged = false;
+                    delete $rootScope.is_staff;
+                    // problema con la conexión con el API. 
+                    // Mostrar mensaje de error y redireccionar.
+                });
     }
 
 }]);
@@ -103,6 +104,10 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
 scipControllers.controller('UserListController', ['$scope', '$rootScope', '$location', 'Users', function($scope, $rootScope, $location, Users){
     console.log($rootScope.logged);
     if ($rootScope.logged){
+        if (!$rootScope.is_staff) {
+            console.log("el usuario no es admin");
+            $location.path('/404');
+        }
         // La conexión con el API se hace sólo para usuarios loggeados.
         Users.get(
                 function(data){
