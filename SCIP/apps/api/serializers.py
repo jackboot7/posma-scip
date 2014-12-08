@@ -52,11 +52,12 @@ class UserSerializer(serializers.ModelSerializer):
     last_workday = serializers.SerializerMethodField('get_last_workday')
     is_working = serializers.SerializerMethodField('get_is_working')
     average_hours_worked = serializers.SerializerMethodField('get_avg_hours_worked')
+    user_id = serializers.IntegerField(source='pk')
 
     class Meta:
         model = auth.models.User
-        fields = ('username', 'first_name', 'last_name', 'email', 'last_workday', 'is_working', 'average_hours_worked',
-                  'is_staff')
+        fields = ('user_id', 'username', 'first_name', 'last_name', 'email', 'last_workday', 'is_working',
+                  'average_hours_worked', 'is_staff')
 
     def get_last_workday(self, obj):
         try:
