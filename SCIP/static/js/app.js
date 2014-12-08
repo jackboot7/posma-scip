@@ -1,6 +1,6 @@
 "use strict";
 
-var posmaSCIP = angular.module('posmaSCIP', ['ngRoute', 'scipServices', 'scipControllers']);
+var posmaSCIP = angular.module('posmaSCIP', ['ngRoute', 'angular-jwt', 'scipServices', 'scipControllers']);
 
 posmaSCIP.config(['$routeProvider','$locationProvider',
     function($routeProvider, $locationProvider){

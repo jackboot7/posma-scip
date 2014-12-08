@@ -14,7 +14,7 @@ scipControllers.controller('404Controller', function($scope, $window, $route, $r
 
 });
 
-scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope', '$location', 'Login', 'User', function($scope, $window, $rootScope, $location, Login, User){
+scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope', '$location', 'Login', 'User', 'jwtHelper', function($scope, $window, $rootScope, $location, Login, User, jwtHelper){
     console.log("En LoginController");
 
     $scope.login = function() {
@@ -23,20 +23,7 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
 
                 function(data){
                     $window.sessionStorage.token = data.token;
-                    User.get(
-                        {username:$scope.username},
-
-                        function(data){
-                            //$window.sessionStorage.user = JSON.stringify(data);
-                            //console.log(JSON.stringify(data));
-                            $window.sessionStorage.user = JSON.stringify(data);
-                        },
-                        function(data){
-                            console.log("problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
-                            delete $window.sessionStorage.token;
-                            delete $window.sessionStorage.user;
-                            $rootScope.logged = false;
-                        });
+                    $window.sessionStorage.user = JSON.stringify(jwtHelper.decodeToken(data.token));
 
                     $rootScope.logged = true;
                     $location.path('/');
@@ -60,10 +47,8 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
     if(!$rootScope.logged){
         $location.path('/login');
     }
-    console.log($window.sessionStorage.user);
-    $scope.user = angular.fromJson($window.sessionStorage.user);
-    console.log("hola " + $scope.user['username']);
-    
+
+    $scope.user = JSON.parse($window.sessionStorage.user);
     // Se obtienen los datos del usuario logueado actualmente
     // Users.get(username);
     // Para ese usuario logueado: 
