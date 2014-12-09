@@ -1,21 +1,40 @@
 <div class="row">
-    <div class="col-sm-4 col-sm-offset-3">
-        <span ng-show="is_staff"><a href="/users/">Users</a></span>
-        <span><a href="/workdays/">Historial</a></span>
+    {% verbatim %}
+    <div class="col-sm-4"><h1>Bienvenid@, {{ first_name }}.</h1></div>
+    {% endverbatim %}
+</div>
+
+<div class="row">
+    <div class="col-sm-10">&nbsp;</div>
+</div>
+
+<div class="row">
+    <div class="col-sm-4">
+        <form class="form-horizontal" role="form">
+            <!--<div class="col-sm-offset-4 col-sm-6">-->
+               <button type="button" class="btn btn-primary btn-len" ng-hide="checked" ng-click="checkin()">Iniciar Jornada</button>
+               <button type="button" class="btn btn-warning btn-len" ng-show="checked" ng-click="checkin()">Culminar Jornada</button>
+            <!--</div>-->
+        </form>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-sm-4 col-sm-offset-3"><h1>Checkin-Checkout Button</h1></div>
+    <div class="col-sm-10">&nbsp;</div>
 </div>
 
-<div class="row">
-    <div class="col-sm-4 col-sm-offset-3">
-        <form class="form-horizontal" role="form">
-            <div class="col-sm-offset-4 col-sm-6">
-               <button type="button" class="btn btn-primary btn-len" ng-hide="checked" ng-click="checkin()">Iniciar Jornada</button>
-               <button type="button" class="btn btn-warning btn-len" ng-show="checked" ng-click="checkin()">Culminar Jornada</button>
-            </div>
-        </form>
+<div class="row" ng-show="checked">
+    <div class="col-sm-4">
+    {% verbatim %}
+        <span>Jornada iniciada el {{ workday_started | date: "dd/MM/yyyy" }} a las {{ workday_started | date: "h:mm a" }}</span>
+    {% endverbatim %}
+    </div>
+</div>
+
+<div class="row" ng-hide="checked">
+    <div class="col-sm-4">
+    {% verbatim %}
+        <span>Última jornada finalizada el {{ workday_finished | date: "dd/MM/yyyy" }} a las {{ workday_finished | date: "h:mm a" }}</span>
+    {% endverbatim %}
     </div>
 </div>
