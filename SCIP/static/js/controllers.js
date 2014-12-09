@@ -28,8 +28,6 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
                     $window.sessionStorage.user = JSON.stringify(user_obj);
 
                     $rootScope.logged = true;
-                    $rootScope.user = user_obj;
-                    //$rootScope.is_staff = user_obj.is_staff;
                     $location.path('/');
 
                 }, 
@@ -39,7 +37,6 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
                     delete $window.sessionStorage.token;
                     delete $window.sessionStorage.user;
                     $rootScope.logged = false;
-                    delete $rootScope.user;
                     // problema con la conexión con el API. 
                     // Mostrar mensaje de error y redireccionar.
                 });
@@ -54,7 +51,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
     if(!$rootScope.logged){
         $location.path('/login');
     }else{
-        $scope.is_staff = $rootScope.user.is_staff;
+        $scope.is_staff = JSON.parse($window.sessionStorage.user).is_staff;
         var username = JSON.parse($window.sessionStorage.user).username;
         User.get( {username:username},
                 function(data){ 
@@ -106,7 +103,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
 scipControllers.controller('UserListController', ['$scope', '$rootScope', '$location', 'Users', function($scope, $rootScope, $location, Users){
     console.log($rootScope.logged);
     if ($rootScope.logged){
-        if (!$rootScope.user.is_staff) {
+        if (!JSON.parse($window.sessionStorage.user).is_staff) {
             console.log("el usuario no es admin");
             $location.path('/404');
         }
@@ -129,12 +126,12 @@ scipControllers.controller('UserListController', ['$scope', '$rootScope', '$loca
 }]);
 
 
-scipControllers.controller('WorkdayListController', ['$scope', '$rootScope', '$location', '$routeParams', 'Workdays', 
-        function($scope, $rootScope, $location, $routeParams, Workdays){
+scipControllers.controller('WorkdayListController', ['$scope', '$rootScope', '$location', '$routeParams', '$window', 'Workdays', 
+        function($scope, $rootScope, $location, $routeParams, $window, Workdays){
         
     console.log("En WorkdayListController");
     if ($rootScope.logged){
-        $scope.username = ($routeParams.username)? $routeParams.username : $rootScope.user.username;
+        $scope.username = ($routeParams.username)? $routeParams.username : JSON.parse($window.sessionStorage.user).username;
 
         Workdays.get({username: $scope.username},
                 function(data){
