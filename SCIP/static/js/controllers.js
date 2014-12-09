@@ -28,7 +28,8 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
                     $window.sessionStorage.user = JSON.stringify(user_obj);
 
                     $rootScope.logged = true;
-                    $rootScope.is_staff = user_obj.is_staff;
+                    $rootScope.user = user_obj;
+                    //$rootScope.is_staff = user_obj.is_staff;
                     $location.path('/');
 
                 }, 
@@ -38,7 +39,7 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
                     delete $window.sessionStorage.token;
                     delete $window.sessionStorage.user;
                     $rootScope.logged = false;
-                    delete $rootScope.is_staff;
+                    delete $rootScope.user;
                     // problema con la conexión con el API. 
                     // Mostrar mensaje de error y redireccionar.
                 });
@@ -53,6 +54,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
     if(!$rootScope.logged){
         $location.path('/login');
     }else{
+        $scope.is_staff = $rootScope.user.is_staff;
         var username = JSON.parse($window.sessionStorage.user).username;
         User.get( {username:username},
                 function(data){ 
@@ -104,7 +106,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
 scipControllers.controller('UserListController', ['$scope', '$rootScope', '$location', 'Users', function($scope, $rootScope, $location, Users){
     console.log($rootScope.logged);
     if ($rootScope.logged){
-        if (!$rootScope.is_staff) {
+        if (!$rootScope.user.is_staff) {
             console.log("el usuario no es admin");
             $location.path('/404');
         }
@@ -132,10 +134,11 @@ scipControllers.controller('WorkdayListController', ['$scope', '$rootScope', '$l
         
     console.log("En WorkdayListController");
     if ($rootScope.logged){
-        Workdays.get({username:$routeParams.username},
+        $scope.username = ($routeParams.username)? $routeParams.username : $rootScope.user.username;
+
+        Workdays.get({username: $scope.username},
                 function(data){
-                    $scope.username = $routeParams.username;
-                    console.log($routeParams.username);
+                    console.log($scope.username);
                     console.log(data);
                     $scope.workdays = data;
                 },
