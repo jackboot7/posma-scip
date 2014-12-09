@@ -44,11 +44,11 @@ posmaSCIP.config(['$resourceProvider',
 
 posmaSCIP.config(['$httpProvider',
         function ($httpProvider){
+            // Inyecta el token en todos los headers enviados al servidor.
             $httpProvider.interceptors.push('authInterceptor');
         }]);
 
 posmaSCIP.run(['$rootScope', '$window', '$location', function($rootScope, $window, $location){
-    // se obtiene el token del usuario, y se carga su estado en el scope para toda la app.
     if ($window.sessionStorage.token){
         $rootScope.logged = true;
     }else{

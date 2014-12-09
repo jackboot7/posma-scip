@@ -1,6 +1,5 @@
 var scipServices = angular.module('scipServices', ['ngResource']);
 
-
 // If the token is set, we inject it with every request.
 // This requests interceptor is added in app.js -> config
 scipServices.factory('authInterceptor', function($rootScope, $q, $window){
@@ -65,7 +64,6 @@ scipServices.factory('Checkin', ['$resource', function($resource){
 }]);
 
 scipServices.factory('Workdays', ['$resource', function($resource){
-    // implementa el servicio para obtener el listado de workdays
     return $resource('v1/users/:username/workdays', {}, {
         get: { params:{}, isArray:true}
     });
