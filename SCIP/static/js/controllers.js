@@ -100,7 +100,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
 }]);
 
 
-scipControllers.controller('UserListController', ['$scope', '$rootScope', '$location', 'Users', function($scope, $rootScope, $location, Users){
+scipControllers.controller('UserListController', ['$scope', '$rootScope', '$location', '$window', 'Users', function($scope, $rootScope, $location, $window, Users){
     console.log($rootScope.logged);
     if ($rootScope.logged){
         if (!JSON.parse($window.sessionStorage.user).is_staff) {
