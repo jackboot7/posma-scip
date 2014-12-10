@@ -41,8 +41,8 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
     if(!$rootScope.logged){
         $location.path('/login');
     }
-    
-    user_obj = JSON.parse($window.sessionStorage.user),
+    console.log($window.sessionStorage.user);
+    user_obj = angular.fromJson($window.sessionStorage.user);
     username = user_obj.username;
 
     $scope.first_name = user_obj.first_name;
@@ -101,7 +101,7 @@ scipControllers.controller('UserListController', ['$scope', '$rootScope', '$loca
     if (!$rootScope.logged){
         $location.path('/login');
     }
-    if (!JSON.parse($window.sessionStorage.user).is_staff) {
+    if (!angular.fromJson($window.sessionStorage.user).is_staff) {
         $location.path('/404');
     }
 
@@ -123,7 +123,7 @@ scipControllers.controller('WorkdayListController', ['$scope', '$rootScope', '$l
         $location.path('/login');
     }
         
-    $scope.username = ($routeParams.username)? $routeParams.username : JSON.parse($window.sessionStorage.user).username;
+    $scope.username = ($routeParams.username)? $routeParams.username : angular.fromJson($window.sessionStorage.user).username;
     Workdays.get({username: $scope.username},
             function(data){
                 $scope.workdays = data;

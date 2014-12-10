@@ -4,13 +4,14 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.http import Http404
 from django.utils.datastructures import MultiValueDict
+from braces.views import CsrfExemptMixin
 
 from apps.organization.models import *
 from apps.api.serializers import *
 from apps.api.permissions import *
 
 
-class UsersView(APIView):
+class UsersView(CsrfExemptMixin, APIView):
     """
     Main /users/ endpoint view
     """
@@ -29,7 +30,7 @@ class UsersView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SpecificUserView(APIView):
+class SpecificUserView(CsrfExemptMixin, APIView):
     """
     /users/{username} endpoint view
     """
@@ -68,7 +69,7 @@ class SpecificUserView(APIView):
     """
 
 
-class UserWorkdaysView(APIView):
+class UserWorkdaysView(CsrfExemptMixin, APIView):
     """
     /users/{username}/workdays/ endpoint view
     """
@@ -98,7 +99,7 @@ class UserWorkdaysView(APIView):
         except Workday.DoesNotExist:
             pass
 
-        data = MultiValueDict(request.DATA)
+        data = MultiValueDict(request.DATA)     # Por que esto llega con username????
         data['user'] = username
         serializer = WorkdaySerializer(data=data)
         if serializer.is_valid():
@@ -107,7 +108,7 @@ class UserWorkdaysView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserLastWorkdayView(APIView):
+class UserLastWorkdayView(CsrfExemptMixin, APIView):
     """
     /users/{username}/workdays/last/ endpoint view
     """
@@ -154,7 +155,7 @@ class UserLastWorkdayView(APIView):
     """
 
 
-class WorkdaysView(APIView):
+class WorkdaysView(CsrfExemptMixin, APIView):
     """
     Main /workdays/ endpoint API view
     """
@@ -163,11 +164,11 @@ class WorkdaysView(APIView):
     def get(self, request, format=None):
         users = Workday.objects.all()
         serializer = WorkdaySerializer(users, many=True)
-        
+
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = WorkdaySerializer(data=request.DATA)        
+        serializer = WorkdaySerializer(data=request.DATA)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -175,7 +176,7 @@ class WorkdaysView(APIView):
         return Response(serializer.errors, status=status.HTTP_412_PRECONDITION_FAILED)
 
 
-class SpecificWorkdayView(APIView):
+class SpecificWorkdayView(CsrfExemptMixin, APIView):
     """
     /workdays/{id} endpoint API view
     """
