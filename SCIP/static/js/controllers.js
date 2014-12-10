@@ -19,6 +19,7 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
                     $window.sessionStorage.token = data.token;
                     $window.sessionStorage.user = JSON.stringify(user_obj);
                     $rootScope.logged = true;
+                    $rootScope.is_staff = user_obj.is_staff;
                     $location.path('/');
                 }, 
 
@@ -27,6 +28,7 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
                     delete $window.sessionStorage.token;
                     delete $window.sessionStorage.user;
                     $rootScope.logged = false;
+                    $rootScope.is_staff = false;
                 });
     }
 }]);
@@ -34,16 +36,30 @@ scipControllers.controller('LoginController', ['$scope', '$window', '$rootScope'
 scipControllers.controller('CheckinController',['$scope', '$rootScope', '$location', '$window', 'User', 'Checkin',  
         function($scope, $rootScope, $location, $window, User, Checkin){
 
+    var user_obj, username;
+
     if(!$rootScope.logged){
         $location.path('/login');
-    }        
-    $scope.is_staff = JSON.parse($window.sessionStorage.user).is_staff;
+    }
+    
+    user_obj = JSON.parse($window.sessionStorage.user),
+    username = user_obj.username;
 
-    var username = JSON.parse($window.sessionStorage.user).username;
-    User.get( {username:username},
+    $scope.first_name = user_obj.first_name;
+    
+    User.get({username:username},
             function(data){ 
-               $scope.checked = data.is_working;
-               $scope.checkin = function(){
+                $scope.checked = data.is_working;
+
+                if (data.last_workday.start) {
+                    $scope.workday_started = data.last_workday.start;
+                }
+
+                if (data.last_workday.finish) {
+                    $scope.workday_finished = data.last_workday.finish;
+                }
+
+                $scope.checkin = function(){
                     // se  verifica el estado actual del usuario.
                     // se hace la llamada al api. para hacer checkin o checkout del usuario dependiendo del caso.
                     if(!$scope.checked){
@@ -53,6 +69,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
                                 function(data){
                                     // éxito en checkin
                                     $scope.checked = !$scope.checked;
+                                    $scope.workday_started = data.start;
                                 },
                                 function(data){
                                     console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
@@ -65,6 +82,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
                                 function(data){
                                     // éxito en checkout
                                     $scope.checked = !$scope.checked;
+                                    $scope.workday_finished = data.finish;
                                 },
                                 function(data){
                                     console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
