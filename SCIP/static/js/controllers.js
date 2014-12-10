@@ -41,7 +41,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
     if(!$rootScope.logged){
         $location.path('/login');
     }
-    console.log($window.sessionStorage.user);
+    
     user_obj = angular.fromJson($window.sessionStorage.user);
     username = user_obj.username;
 
