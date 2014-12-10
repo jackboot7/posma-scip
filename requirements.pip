@@ -6,6 +6,7 @@ django-braces==1.4.0
 django-crispy-forms==1.4.0
 django-javascript-settings==1.1.2
 django-profiletools==0.2.1
+djangorestframework==2.4.4
 django-secure==1.0
 django-uuslug==1.0.2
 python-slugify==0.0.9
