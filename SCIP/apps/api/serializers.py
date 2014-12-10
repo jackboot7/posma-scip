@@ -11,7 +11,7 @@ from apps.organization.models import *
 class WorkdaySerializer(serializers.ModelSerializer):
     start = serializers.DateTimeField(required=False)
     finish = serializers.DateTimeField(required=False)
-    user = serializers.SlugRelatedField(many=False, read_only=False, slug_field='username')
+    user = serializers.SlugRelatedField(read_only=True, slug_field='username')
     hours_worked = serializers.DecimalField(max_digits=4, decimal_places=2, required=False)
 
     class Meta:
