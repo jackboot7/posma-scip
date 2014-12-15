@@ -16,4 +16,5 @@ wsgiref==0.1.2
 pytz==2014.9
 factory-boy==2.4.1
 jsonschema==2.4.0
+celery==3.1.17
 
