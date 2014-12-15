@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from apps.organization.models import Profile, Workday
+from apps.organization.models import Profile, Workday, Settings
 
 
 class ProfileInline(admin.StackedInline):
@@ -14,6 +14,8 @@ class ProfileInline(admin.StackedInline):
 class UserAdmin(UserAdmin):
     inlines = (ProfileInline, )
 
+
+admin.site.register(Settings)
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

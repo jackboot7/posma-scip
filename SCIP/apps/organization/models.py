@@ -1,9 +1,15 @@
+import datetime
+
 from django.db import models
 from django.contrib import auth
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 
+
+#===============================================================================
+# Custom Model Managers
+#===============================================================================
 
 class WorkdayManager(models.Manager):
     """
@@ -18,6 +24,28 @@ class WorkdayManager(models.Manager):
         except auth.models.User.DoesNotExist:
             raise
         return self.filter(user=user)
+
+
+#===============================================================================
+# Application Model Classes
+#===============================================================================
+
+
+class Settings(models.Model):
+    """
+    Relevant settings related to a particular organization
+    """
+    default_checkout_time = models.TimeField(default=datetime.datetime(2000, 1, 1, 18, 00, 00))
+    scheduled_verification_time = models.TimeField(default=datetime.datetime(2000, 1, 1, 20, 00, 00))
+    checkout_reminder_time = models.TimeField(default=datetime.datetime(2000, 1, 1, 19, 00, 00))
+
+    class Meta:
+        verbose_name_plural = "Settings"
+
+    def save(self, *args, **kwargs):
+        # Removes all other entries if there are any
+        self.__class__.objects.exclude(id=self.id).delete()
+        super(Settings, self).save(*args, **kwargs)
 
 
 class Profile(models.Model):
