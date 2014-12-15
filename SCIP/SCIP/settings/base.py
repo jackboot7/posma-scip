@@ -211,4 +211,4 @@ JWT_AUTH = {
 # Celery
 #=============================================================================
 
-BROKER_URL = 'amqp://guest:guest@localhost:5672/scip/'
+BROKER_URL = 'amqp://guest:guest@localhost:5672/scip'

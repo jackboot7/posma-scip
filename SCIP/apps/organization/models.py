@@ -35,9 +35,9 @@ class OrgSettings(models.Model):
     """
     Relevant settings related to a particular organization
     """
-    default_checkout_time = models.TimeField(default=datetime.datetime(2000, 1, 1, 18, 00, 00))
-    scheduled_verification_time = models.TimeField(default=datetime.datetime(2000, 1, 1, 20, 00, 00))
-    checkout_reminder_time = models.TimeField(default=datetime.datetime(2000, 1, 1, 19, 00, 00))
+    default_checkout_time = models.TimeField(default=datetime.time(18, 0))
+    scheduled_verification_time = models.TimeField(default=datetime.time(20, 0))
+    checkout_reminder_time = models.TimeField(default=datetime.time(19, 0))
 
     class Meta:
         verbose_name_plural = "Settings"
