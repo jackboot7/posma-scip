@@ -26,7 +26,7 @@ class WorkdaySerializer(serializers.ModelSerializer):
         Note that if we don't define this method, then deserializing
         data will simply return a dictionary of items.
         """
-        utcnow = datetime.utcnow()
+        utcnow = datetime.datetime.utcnow()
         utcnow = utcnow.replace(tzinfo=pytz.utc)
 
         if instance:
@@ -52,7 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
     last_workday = serializers.SerializerMethodField('get_last_workday')
     is_working = serializers.SerializerMethodField('get_is_working')
     average_hours_worked = serializers.SerializerMethodField('get_avg_hours_worked')
-    user_id = serializers.IntegerField(source='pk')
+    user_id = serializers.IntegerField(source='pk', required=False)
 
     class Meta:
         model = auth.models.User

@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from apps.organization.models import *
+from apps.organization.models import Profile, Workday
 
 
 class UserTestCase(TestCase):

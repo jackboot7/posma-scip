@@ -31,7 +31,7 @@ class WorkdayManager(models.Manager):
 #===============================================================================
 
 
-class Settings(models.Model):
+class OrgSettings(models.Model):
     """
     Relevant settings related to a particular organization
     """
@@ -41,11 +41,12 @@ class Settings(models.Model):
 
     class Meta:
         verbose_name_plural = "Settings"
+        verbose_name = "settings"
 
     def save(self, *args, **kwargs):
         # Removes all other entries if there are any
         self.__class__.objects.exclude(id=self.id).delete()
-        super(Settings, self).save(*args, **kwargs)
+        super(OrgSettings, self).save(*args, **kwargs)
 
 
 class Profile(models.Model):
