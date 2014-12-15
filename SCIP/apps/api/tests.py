@@ -1,5 +1,6 @@
 import json
 import factory
+from datetime import datetime
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -172,6 +173,7 @@ class SuperuserAPITest(TestCase):
 
         # PUT method
         response = self.client.put(url, {'username': "ospa", 'first_name': "Bob"}, HTTP_AUTHORIZATION=self.auth)
+        print "response = %s" % response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['first_name'], "Bob")
         response = self.client.put(url, {})     # Unauthorized access
