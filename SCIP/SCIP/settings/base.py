@@ -26,7 +26,7 @@ ALLOWED_HOSTS = []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'UTC'
 
 LANGUAGE_CODE = 'es-ve'
 USE_I18N = True
@@ -212,4 +212,9 @@ JWT_AUTH = {
 # Celery
 #=============================================================================
 
+import djcelery
+djcelery.setup_loader()
+
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 BROKER_URL = 'amqp://guest:guest@localhost:5672/scip'
+# CELERY_ENABLE_UTC = True
