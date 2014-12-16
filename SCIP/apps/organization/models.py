@@ -36,9 +36,9 @@ class OrgSettings(models.Model):
     """
     Relevant settings related to a particular organization
     """
-    default_checkout_time = models.TimeField(default=datetime.time(18, 0))
-    scheduled_verification_time = models.TimeField(default=datetime.time(20, 0))
-    checkout_reminder_time = models.TimeField(default=datetime.time(19, 0))
+    default_checkout_time = models.TimeField(default=datetime.time(22, 30))
+    scheduled_verification_time = models.TimeField(default=datetime.time(0, 30))
+    checkout_reminder_time = models.TimeField(default=datetime.time(23, 30))
     periodic_task = models.ForeignKey(PeriodicTask, null=True, blank=True)
 
     class Meta:
