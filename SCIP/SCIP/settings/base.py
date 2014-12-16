@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'braces',
     'crispy_forms',
+    'djcelery',
 
     # Project applications/modules
     'apps.organization',

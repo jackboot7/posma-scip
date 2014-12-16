@@ -6,7 +6,7 @@ from apps.organization.models import Workday, OrgSettings
 
 
 @app.task
-def automatic_checkout(): 
+def automatic_checkout():
     """
     Automatically closes all pending workdays if finish datetime is not set
     """
@@ -16,11 +16,11 @@ def automatic_checkout():
     today = datetime.date.today()
 
     for wd in workdays:
-        wd.finish = datetime.datetime(today.year, 
-                                      today.month, 
-                                      today.day, 
-                                      default.hour, 
-                                      default.minute, 
+        wd.finish = datetime.datetime(today.year,
+                                      today.month,
+                                      today.day,
+                                      default.hour,
+                                      default.minute,
                                       default.second,
                                       tzinfo=pytz.UTC)
         wd.save()

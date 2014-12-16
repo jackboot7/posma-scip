@@ -5,6 +5,7 @@ from django.contrib import auth
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
+from djcelery.models import PeriodicTask, CrontabSchedule
 
 
 #===============================================================================
@@ -38,15 +39,45 @@ class OrgSettings(models.Model):
     default_checkout_time = models.TimeField(default=datetime.time(18, 0))
     scheduled_verification_time = models.TimeField(default=datetime.time(20, 0))
     checkout_reminder_time = models.TimeField(default=datetime.time(19, 0))
+    periodic_task = models.ForeignKey(PeriodicTask, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Settings"
-        verbose_name = "settings"
+        verbose_name = "Settings"
 
     def save(self, *args, **kwargs):
         # Removes all other entries if there are any
         self.__class__.objects.exclude(id=self.id).delete()
         super(OrgSettings, self).save(*args, **kwargs)
+
+        # creates new periodic task
+        if self.periodic_task is None:
+            cron = CrontabSchedule(
+                minute=self.scheduled_verification_time.minute,
+                hour=self.scheduled_verification_time.hour)
+            cron.save()
+
+            ptask = PeriodicTask(
+                name="schedule-%s" % cron.id,
+                task="apps.organization.tasks.automatic_checkout",
+                crontab=cron,
+                queue="celery")
+            ptask.save()
+            self.periodic_task = ptask
+            super(OrgSettings, self).save(*args, **kwargs)
+        else:
+            ptask = self.periodic_task
+            cron = ptask.crontab
+            cron.hour = self.scheduled_verification_time.hour
+            cron.minute = self.scheduled_verification_time.minute
+            cron.save()
+            ptask.save()
+
+    def delete(self):
+        ptask = self.periodic_task
+        cron = ptask.crontab
+        cron.delete()
+        ptask.delete()
 
 
 class Profile(models.Model):
