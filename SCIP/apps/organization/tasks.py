@@ -1,6 +1,9 @@
 import pytz
 import datetime
 
+from django.core.mail import send_mail
+from django.conf import settings
+
 from SCIP.celery import app
 from apps.organization.models import Workday, OrgSettings
 
@@ -24,3 +27,16 @@ def automatic_checkout():
                                       default.second,
                                       tzinfo=pytz.UTC)
         wd.save()
+
+
+@app.task
+def checkout_notification():
+    workdays = Workday.objects.filter(finish__isnull=True)
+    users = [wd.user for wd in workdays]
+
+    for user in users:
+        send_mail('Cierre de jornada',
+                  '%s, recuerda marcar el cierre de tu jornada laboral al terminar. Gracias!' % user.first_name,
+                  settings.EMAIL_HOST_USER,
+                  [user.email],
+                  fail_silently=False)

@@ -39,7 +39,8 @@ class OrgSettings(models.Model):
     default_checkout_time = models.TimeField(default=datetime.time(22, 30))
     scheduled_verification_time = models.TimeField(default=datetime.time(0, 30))
     checkout_reminder_time = models.TimeField(default=datetime.time(23, 30))
-    periodic_task = models.ForeignKey(PeriodicTask, null=True, blank=True)
+    checkout_task = models.ForeignKey(PeriodicTask, null=True, blank=True, related_name="+")
+    reminder_task = models.ForeignKey(PeriodicTask, null=True, blank=True, related_name="+")
 
     class Meta:
         verbose_name_plural = "Settings"
@@ -50,31 +51,54 @@ class OrgSettings(models.Model):
         self.__class__.objects.exclude(id=self.id).delete()
         super(OrgSettings, self).save(*args, **kwargs)
 
-        # creates new periodic task
-        if self.periodic_task is None:
+        # creates new checkout task
+        if self.checkout_task is None:
             cron = CrontabSchedule(
                 minute=self.scheduled_verification_time.minute,
                 hour=self.scheduled_verification_time.hour)
             cron.save()
 
-            ptask = PeriodicTask(
-                name="schedule-%s" % cron.id,
+            ctask = PeriodicTask(
+                name="scheduled-checkout-%s" % cron.id,
                 task="apps.organization.tasks.automatic_checkout",
                 crontab=cron,
                 queue="celery")
-            ptask.save()
-            self.periodic_task = ptask
+            ctask.save()
+            self.checkout_task = ctask
             super(OrgSettings, self).save(*args, **kwargs)
         else:
-            ptask = self.periodic_task
-            cron = ptask.crontab
+            ctask = self.checkout_task
+            cron = ctask.crontab
             cron.hour = self.scheduled_verification_time.hour
             cron.minute = self.scheduled_verification_time.minute
             cron.save()
-            ptask.save()
+            ctask.save()
+
+        # creates new reminder task
+        if self.reminder_task is None:
+            cron = CrontabSchedule(
+                minute=self.checkout_reminder_time.minute,
+                hour=self.checkout_reminder_time.hour)
+            cron.save()
+
+            rtask = PeriodicTask(
+                name="scheduled-reminder-%s" % cron.id,
+                task="apps.organization.tasks.checkout_notification",
+                crontab=cron,
+                queue="celery")
+            rtask.save()
+            self.reminder_task = rtask
+            super(OrgSettings, self).save(*args, **kwargs)
+        else:
+            rtask = self.reminder_task
+            cron = rtask.crontab
+            cron.hour = self.checkout_reminder_time.hour
+            cron.minute = self.checkout_reminder_time.minute
+            cron.save()
+            rtask.save()
 
     def delete(self):
-        ptask = self.periodic_task
+        ptask = self.checkout_task
         cron = ptask.crontab
         cron.delete()
         ptask.delete()

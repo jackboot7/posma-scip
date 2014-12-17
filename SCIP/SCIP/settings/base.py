@@ -218,3 +218,13 @@ djcelery.setup_loader()
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 BROKER_URL = 'amqp://guest:guest@localhost:5672/scip'
 # CELERY_ENABLE_UTC = True
+
+
+#==============================================
+# Email settings
+#==============================================
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'traffic.testing25@gmail.com'
+EMAIL_HOST_PASSWORD = 'twittertwitter'
+EMAIL_PORT = 587
