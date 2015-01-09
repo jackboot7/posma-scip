@@ -26,7 +26,7 @@ ALLOWED_HOSTS = []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'UTC'
 
 LANGUAGE_CODE = 'es-ve'
 USE_I18N = True
@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'braces',
     'crispy_forms',
+    'djcelery',
 
     # Project applications/modules
     'apps.organization',
@@ -205,3 +206,25 @@ JWT_AUTH = {
     'JWT_PAYLOAD_HANDLER': 'apps.api.utils.jwt_payload_handler',
     'JWT_PAYLOAD_GET_USER_ID_HANDLER': 'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
 }
+
+
+#=============================================================================
+# Celery
+#=============================================================================
+
+import djcelery
+djcelery.setup_loader()
+
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+BROKER_URL = 'amqp://guest:guest@localhost:5672/scip'
+# CELERY_ENABLE_UTC = True
+
+
+#==============================================
+# Email settings
+#==============================================
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'traffic.testing25@gmail.com'
+EMAIL_HOST_PASSWORD = 'twittertwitter'
+EMAIL_PORT = 587

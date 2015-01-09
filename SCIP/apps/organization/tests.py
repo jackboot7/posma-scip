@@ -5,7 +5,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from apps.organization.models import *
+from apps.organization.models import Profile, Workday, OrgSettings
+from apps.organization import tasks
 
 
 class UserTestCase(TestCase):
@@ -64,3 +65,17 @@ class WorkdayTestCase(TestCase):
                                        start=datetime(2013, 11, 20, 10, 8, 7, 127325, tzinfo=pytz.UTC))
 
         self.assertRaises(ValidationError, work2.clean)
+
+
+class CeleryTasksTestCase(TestCase):
+    def setUp(self):
+        self.settings = OrgSettings.objects.create()
+        self.user = User.objects.create(username="burrg", email="burrg@harrb.gov", password="posma")
+
+    def test_checkout_task(self):
+        work = Workday.objects.create(user=self.user,
+                                      start=datetime.utcnow())
+
+        result = tasks.automatic_checkout()
+
+        self.assertEqual(Workday.objects.get(id=work.id).finish.time(), self.settings.default_checkout_time)

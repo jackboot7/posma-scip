@@ -51,7 +51,7 @@ class WorkdayFactory(factory.django.DjangoModelFactory):
         model = Workday
 
     user = factory.SubFactory(UserFactory)
-    start = factory.LazyAttribute(lambda a: datetime.utcnow().replace(tzinfo=pytz.utc))
+    start = factory.LazyAttribute(lambda a: datetime.datetime.utcnow().replace(tzinfo=pytz.utc))
 
 
 #=============================================================================
@@ -172,6 +172,7 @@ class SuperuserAPITest(TestCase):
 
         # PUT method
         response = self.client.put(url, {'username': "ospa", 'first_name': "Bob"}, HTTP_AUTHORIZATION=self.auth)
+        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['first_name'], "Bob")
         response = self.client.put(url, {})     # Unauthorized access
@@ -213,7 +214,7 @@ class SuperuserAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsInstance(response.data['finish'], datetime)
+        self.assertIsInstance(response.data['finish'], datetime.datetime)
 
         # Invalid workday editing
         response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)
@@ -352,7 +353,7 @@ class UserAPITest(TestCase):
         # PUT method
         response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsInstance(response.data['finish'], datetime)
+        self.assertIsInstance(response.data['finish'], datetime.datetime)
 
         # Invalid workday editing
         response = self.client.put(url, {}, HTTP_AUTHORIZATION=self.auth)

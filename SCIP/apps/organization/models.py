@@ -1,9 +1,16 @@
+import datetime
+
 from django.db import models
 from django.contrib import auth
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
+from djcelery.models import PeriodicTask, CrontabSchedule
 
+
+#===============================================================================
+# Custom Model Managers
+#===============================================================================
 
 class WorkdayManager(models.Manager):
     """
@@ -18,6 +25,83 @@ class WorkdayManager(models.Manager):
         except auth.models.User.DoesNotExist:
             raise
         return self.filter(user=user)
+
+
+#===============================================================================
+# Application Model Classes
+#===============================================================================
+
+
+class OrgSettings(models.Model):
+    """
+    Relevant settings related to a particular organization
+    """
+    default_checkout_time = models.TimeField(default=datetime.time(22, 30))
+    scheduled_verification_time = models.TimeField(default=datetime.time(0, 30))
+    checkout_reminder_time = models.TimeField(default=datetime.time(23, 30))
+    checkout_task = models.ForeignKey(PeriodicTask, null=True, blank=True, related_name="+")
+    reminder_task = models.ForeignKey(PeriodicTask, null=True, blank=True, related_name="+")
+
+    class Meta:
+        verbose_name_plural = "Settings"
+        verbose_name = "Settings"
+
+    def save(self, *args, **kwargs):
+        # Removes all other entries if there are any
+        self.__class__.objects.exclude(id=self.id).delete()
+        super(OrgSettings, self).save(*args, **kwargs)
+
+        # creates new checkout task
+        if self.checkout_task is None:
+            cron = CrontabSchedule(
+                minute=self.scheduled_verification_time.minute,
+                hour=self.scheduled_verification_time.hour)
+            cron.save()
+
+            ctask = PeriodicTask(
+                name="scheduled-checkout-%s" % cron.id,
+                task="apps.organization.tasks.automatic_checkout",
+                crontab=cron,
+                queue="celery")
+            ctask.save()
+            self.checkout_task = ctask
+            super(OrgSettings, self).save(*args, **kwargs)
+        else:
+            ctask = self.checkout_task
+            cron = ctask.crontab
+            cron.hour = self.scheduled_verification_time.hour
+            cron.minute = self.scheduled_verification_time.minute
+            cron.save()
+            ctask.save()
+
+        # creates new reminder task
+        if self.reminder_task is None:
+            cron = CrontabSchedule(
+                minute=self.checkout_reminder_time.minute,
+                hour=self.checkout_reminder_time.hour)
+            cron.save()
+
+            rtask = PeriodicTask(
+                name="scheduled-reminder-%s" % cron.id,
+                task="apps.organization.tasks.checkout_notification",
+                crontab=cron,
+                queue="celery")
+            rtask.save()
+            self.reminder_task = rtask
+            super(OrgSettings, self).save(*args, **kwargs)
+        else:
+            rtask = self.reminder_task
+            cron = rtask.crontab
+            cron.hour = self.checkout_reminder_time.hour
+            cron.minute = self.checkout_reminder_time.minute
+            cron.save()
+            rtask.save()
+
+    def delete(self):
+        ptask = self.checkout_task
+        cron = ptask.crontab
+        cron.delete()
+        ptask.delete()
 
 
 class Profile(models.Model):
