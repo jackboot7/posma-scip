@@ -216,7 +216,7 @@ import djcelery
 djcelery.setup_loader()
 
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-BROKER_URL = 'amqp://guest:guest@localhost:5672/scip'
+BROKER_URL = 'amqp://scip:scip321@localhost:5672/scip'
 # CELERY_ENABLE_UTC = True
 
 
