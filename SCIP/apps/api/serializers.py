@@ -76,7 +76,8 @@ class UserSerializer(serializers.ModelSerializer):
             return False
 
     def get_avg_hours_worked(self, obj):
-        workdays = obj.workday_set.all()
+        # Exclude open workdays for the average.
+        workdays = obj.workday_set.all().exclude(finish=None)
 
         if workdays.count() == 0:
             return 0
