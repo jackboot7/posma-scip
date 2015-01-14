@@ -228,3 +228,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'traffic.testing25@gmail.com'
 EMAIL_HOST_PASSWORD = 'twittertwitter'
 EMAIL_PORT = 587
+# Dirección de envío de correo
+EMAIL_FROM_USER = 'scip@posmagroup.com'

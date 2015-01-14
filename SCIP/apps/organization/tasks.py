@@ -37,6 +37,6 @@ def checkout_notification():
     for user in users:
         send_mail('Cierre de jornada',
                   '%s, recuerda marcar el cierre de tu jornada laboral al terminar. Gracias!' % user.first_name,
-                  settings.EMAIL_HOST_USER,
+                  settings.EMAIL_FROM_USER,
                   [user.email],
                   fail_silently=False)
