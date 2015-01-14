@@ -36,10 +36,7 @@ def checkout_notification():
 
     for user in users:
         send_mail('[Posma Group] Cierre de jornada en SCIP',
-                  '%s, recuerda marcar el cierre de tu jornada laboral al terminar. 
-
-                  http://scip.posmagroup.com/
-                  Gracias!' % user.first_name,
+                  '%s, recuerda marcar el cierre de tu jornada laboral al terminar.\n\n http://scip.posmagroup.com/ \n\n Gracias!' % user.first_name,
                   settings.EMAIL_FROM_USER,
                   [user.email],
                   fail_silently=False)
