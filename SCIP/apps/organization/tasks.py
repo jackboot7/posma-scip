@@ -35,8 +35,11 @@ def checkout_notification():
     users = [wd.user for wd in workdays]
 
     for user in users:
-        send_mail('Cierre de jornada',
-                  '%s, recuerda marcar el cierre de tu jornada laboral al terminar. Gracias!' % user.first_name,
+        send_mail('[Posma Group] Cierre de jornada en SCIP',
+                  '%s, recuerda marcar el cierre de tu jornada laboral al terminar. 
+
+                  http://scip.posmagroup.com/
+                  Gracias!' % user.first_name,
                   settings.EMAIL_FROM_USER,
                   [user.email],
                   fail_silently=False)
