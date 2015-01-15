@@ -76,18 +76,27 @@ class UserSerializer(serializers.ModelSerializer):
             return False
 
     def get_avg_hours_worked(self, obj):
+        """ We use itertools to group the different days """
+        from itertools import groupby
+
+        def _workday_per_day(wd):
+            """ Get the start time from the workday """
+            return wd.start
+
+        def _avg_per_day(wl):
+            accum = 0.0
+            for wd in wl:
+                if wd.hours_worked:
+                    accum = accum + wd.hours_worked
+            return accum
+
         # Exclude open workdays for the average.
-        workdays = obj.workday_set.all().exclude(finish=None)
+        workdays = obj.workday_set.all().order_by('start').exclude(finish__isnull=True)
 
         if workdays.count() == 0:
             return 0
 
-        delta = workdays.first().start - workdays.last().start
-        day_count = delta.days + 1
+        # we calculate a list of workdays list, grouped by day.
+        workday_list = [list(g) for t, g in groupby(workdays, _workday_per_day)]
 
-        accum = 0.0
-        for wd in workdays:
-            if wd.hours_worked:
-                accum = accum + wd.hours_worked
-
-        return accum / day_count
+        return sum([_avg_per_day(wl) for wl in workday_list])/len(workday_list)
