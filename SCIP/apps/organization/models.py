@@ -139,6 +139,10 @@ class Workday(models.Model):
     start = models.DateTimeField(auto_now_add=True)
     finish = models.DateTimeField(blank=True, null=True)
 
+    user_notes = models.TextField(null=True, blank=True)
+    staff_notes = models.TextField(null=True, blank=True)
+    edited = models.BooleanField(default=False)
+
     # model manager
     objects = WorkdayManager()
 
