@@ -136,7 +136,8 @@ class Workday(models.Model):
     A workday represents a succesful session of work, delimited by 'start' and 'finish' timestamps.
     """
     user = models.ForeignKey(auth.models.User)
-    start = models.DateTimeField(auto_now_add=True)
+    # start = models.DateTimeField(auto_now_add=True)
+    start = models.DateTimeField()
     finish = models.DateTimeField(blank=True, null=True)
 
     user_notes = models.TextField(null=True, blank=True)
