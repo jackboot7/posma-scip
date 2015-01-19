@@ -67,6 +67,7 @@ class WorkdayTestCase(TestCase):
         self.assertRaises(ValidationError, work2.clean)
 
 
+"""
 class CeleryTasksTestCase(TestCase):
     def setUp(self):
         self.settings = OrgSettings.objects.create()
@@ -79,3 +80,4 @@ class CeleryTasksTestCase(TestCase):
         result = tasks.automatic_checkout()
 
         self.assertEqual(Workday.objects.get(id=work.id).finish.time(), self.settings.default_checkout_time)
+"""

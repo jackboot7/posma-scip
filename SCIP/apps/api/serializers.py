@@ -14,9 +14,11 @@ class WorkdaySerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(many=False, read_only=False, slug_field='username')
     hours_worked = serializers.DecimalField(max_digits=4, decimal_places=2, required=False)
 
+    user_notes = serializers.CharField(required=False, max_length=256)
+
     class Meta:
         model = Workday
-        fields = ('id', 'user', 'start', 'finish', 'hours_worked')
+        fields = ('id', 'user', 'start', 'finish', 'hours_worked', 'user_notes')
 
     def restore_object(self, attrs, instance=None):
         """
@@ -32,6 +34,7 @@ class WorkdaySerializer(serializers.ModelSerializer):
         if instance:
             # Update existing instance
             instance.finish = utcnow
+            instance.user_notes = attrs.get('user_notes', "")
             username = attrs.get('user', "")
             if username and not instance.user:
                 user = auth.models.User.objects.get(username=username)

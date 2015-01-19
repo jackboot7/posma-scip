@@ -9,12 +9,27 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <form class="form-horizontal" role="form">
             <!--<div class="col-sm-offset-4 col-sm-6">-->
                <button type="button" class="btn btn-primary btn-len" ng-hide="checked" ng-click="checkin()">Iniciar Jornada</button>
                <button type="button" class="btn btn-warning btn-len" ng-show="checked" ng-click="checkin()">Culminar Jornada</button>
+
+
             <!--</div>-->
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-10">&nbsp;</div>
+</div>
+
+<div class="row">
+    <div class="col-sm-10">
+        <form class="form-inline" role="form">
+            <label for="user_notes">Observaciones: </label>
+            <textarea ng-model="notes" class="form-control no-resize" name="user_notes" id="user_notes"></textarea>
         </form>
     </div>
 </div>

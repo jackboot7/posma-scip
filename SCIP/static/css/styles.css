@@ -2,3 +2,6 @@
     width:210px !important;
 }
 
+.no-resize { 
+    resize:none !important; 
+}

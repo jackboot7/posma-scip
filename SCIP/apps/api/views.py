@@ -1,9 +1,10 @@
+import copy
+
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.http import Http404
-from django.utils.datastructures import MultiValueDict
 from braces.views import CsrfExemptMixin
 
 from apps.organization.models import *
@@ -99,8 +100,9 @@ class UserWorkdaysView(CsrfExemptMixin, APIView):
         except Workday.DoesNotExist:
             pass
 
-        data = MultiValueDict(request.DATA)     # Por que esto llega con username????
+        data = copy.deepcopy(request.DATA)
         data['user'] = username
+
         serializer = WorkdaySerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -135,7 +137,7 @@ class UserLastWorkdayView(CsrfExemptMixin, APIView):
             return Response({'detail': "Selected workday has already finished. It can't be edited."},
                             status=status.HTTP_412_PRECONDITION_FAILED)
 
-        data = MultiValueDict(request.DATA)
+        data = copy.deepcopy(request.DATA)
         data['user'] = username
         serializer = WorkdaySerializer(workday, data=data)
         if serializer.is_valid():

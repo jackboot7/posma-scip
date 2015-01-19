@@ -51,13 +51,15 @@ scipServices.factory('Checkin', ['$resource', function($resource){
         checkin: {
             method:'POST',
             isArray: false,
-            params: {},
+            //params: {user_notes: '@user_notes'},
+            params: {}
         },
         checkout: {
             method:'PUT',
             url: '/v1/users/:username/workdays/last',
             isArray: false,
-            params: {},
+            //params: {user_notes: '@user_notes'},
+            params: {}
         }
         
     });
