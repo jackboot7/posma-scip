@@ -69,7 +69,7 @@ class WorkdayTestCase(TestCase):
 
 class CeleryTasksTestCase(TestCase):
     def setUp(self):
-        self.settings = OrgSettings.objects.create()
+        self.settings = OrgSettings.objects.create(id=9000)
         self.user = User.objects.create(username="burrg", email="burrg@harrb.gov", password="posma")
 
     def test_checkout_task(self):
@@ -77,5 +77,4 @@ class CeleryTasksTestCase(TestCase):
                                       start=datetime.utcnow())
 
         result = tasks.automatic_checkout()
-
         self.assertEqual(Workday.objects.get(id=work.id).finish.time(), self.settings.default_checkout_time)

@@ -12,12 +12,16 @@ from apps.organization.models import Workday, OrgSettings
 def automatic_checkout():
     """
     Automatically closes all pending workdays if finish datetime is not set
+    and it was started before the default checkout time.
     """
-    workdays = Workday.objects.filter(finish__isnull=True)
     config = OrgSettings.objects.first()   # Later on, it should filter by organization
     default = config.default_checkout_time
-    today = datetime.date.today()
+    utcnow = datetime.datetime.utcnow()
+    checkout_time = utcnow.replace(hour=default.hour, minute=default.minute, second=default.second, tzinfo=pytz.utc)
 
+    workdays = Workday.objects.filter(finish__isnull=True).filter(start__lt=checkout_time)
+
+    today = datetime.date.today()
     for wd in workdays:
         wd.finish = datetime.datetime(today.year,
                                       today.month,
