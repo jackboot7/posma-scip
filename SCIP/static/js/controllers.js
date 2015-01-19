@@ -57,6 +57,8 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
 
                 if (data.last_workday.finish) {
                     $scope.workday_finished = data.last_workday.finish;
+                } else {
+                    $scope.notes = data.last_workday.user_notes;
                 }
 
                 $scope.checkin = function(){
@@ -83,6 +85,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
                                     // éxito en checkout
                                     $scope.checked = !$scope.checked;
                                     $scope.workday_finished = data.finish;
+                                    $scope.notes = "";
                                 },
                                 function(data){
                                     console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
