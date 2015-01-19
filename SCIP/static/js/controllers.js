@@ -57,6 +57,8 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
 
                 if (data.last_workday.finish) {
                     $scope.workday_finished = data.last_workday.finish;
+                } else {
+                    $scope.notes = data.last_workday.user_notes;
                 }
 
                 $scope.checkin = function(){
@@ -65,7 +67,7 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
                     if(!$scope.checked){
                         // Llamada al API para hacer checkin
                         // Si el usuario no ha hecho checkin, se muestra el botón y se usa Checkin.checkin()
-                        Checkin.checkin({username:username},
+                        Checkin.checkin({username:username, user_notes:$scope.notes},
                                 function(data){
                                     // éxito en checkin
                                     $scope.checked = !$scope.checked;
@@ -78,11 +80,12 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
                     }else{
                         // Llamada al API para hacer checkout
                         // Si el usuario ya está trabajando, se muestra el segundo botón y se usa Checkin.checkout()
-                        Checkin.checkout({username:username},
+                        Checkin.checkout({username:username, user_notes:$scope.notes},
                                 function(data){
                                     // éxito en checkout
                                     $scope.checked = !$scope.checked;
                                     $scope.workday_finished = data.finish;
+                                    $scope.notes = "";
                                 },
                                 function(data){
                                     console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
