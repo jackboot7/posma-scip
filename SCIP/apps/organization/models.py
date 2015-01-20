@@ -166,7 +166,7 @@ class Workday(models.Model):
 
         try:
             latest = Workday.objects.user(self.user.username).exclude(id=self.id).latest('start')
-            if not latest.finish:
+            if latest.start < self.start and not latest.finish:
                 raise ValidationError("Latest workday hasn't finished yet for given user")
         except Workday.DoesNotExist:
             pass
