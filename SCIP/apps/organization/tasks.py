@@ -16,10 +16,17 @@ def automatic_checkout():
     """
     config = OrgSettings.objects.first()   # Later on, it should filter by organization
     default = config.default_checkout_time
+    verification_time = config.scheduled_verification_time
     utcnow = datetime.datetime.utcnow()
-    checkout_time = utcnow.replace(hour=default.hour, minute=default.minute, second=default.second, tzinfo=pytz.utc)
 
-    workdays = Workday.objects.filter(finish__isnull=True).filter(start__lt=checkout_time)
+    # calculates the date/time the automatic checkout was supposed to happen
+    verification_date = utcnow.replace(hour=verification_time.hour,
+                                       minute=verification_time.minute,
+                                       second=verification_time.second,
+                                       tzinfo=pytz.utc)
+
+    # get all unfinished workdays started before the automatic checkout date/time
+    workdays = Workday.objects.filter(finish__isnull=True).filter(start__lt=verification_date)
 
     today = datetime.date.today()
     for wd in workdays:
