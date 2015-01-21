@@ -28,8 +28,16 @@ def automatic_checkout():
     # get all unfinished workdays started before the automatic checkout date/time
     workdays = Workday.objects.filter(finish__isnull=True).filter(start__lt=verification_date)
 
-    today = datetime.date.today()
+
+    #
+    # Parche: El día de cierre debe ser el día de inicio, no el día de ejecución de la tarea.
+    #         En el caso de usar el día de ejecución de la tarea, se cierra 24 hrs más tarde 
+    #         si esta se ejecuta después de las 23:59:59.
+
+    #today = datetime.date.today()
+
     for wd in workdays:
+        today = wd.start.date()
         wd.finish = datetime.datetime(today.year,
                                       today.month,
                                       today.day,
