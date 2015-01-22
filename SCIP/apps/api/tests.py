@@ -22,9 +22,9 @@ def validate_json_schema(schema_name, data):
     return True
 
 
-#=============================================================================
+# =============================================================================
 # Model Factories
-#=============================================================================
+# =============================================================================
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -54,9 +54,9 @@ class WorkdayFactory(factory.django.DjangoModelFactory):
     start = factory.LazyAttribute(lambda a: datetime.datetime.utcnow().replace(tzinfo=pytz.utc))
 
 
-#=============================================================================
+# =============================================================================
 # Serializers Test Cases
-#=============================================================================
+# =============================================================================
 
 
 class UserSerializerTestCase(TestCase):
@@ -110,15 +110,15 @@ class WorkdaySerializerTestCase(TestCase):
 
     def test_workday_deserialization(self):
         UserFactory.create(username="joe")
-        serializer = WorkdaySerializer(data={"user": "joe", 
+        serializer = WorkdaySerializer(data={"user": "joe",
                                              "start": "2014-03-13 09:30:07"})
         self.assertTrue(serializer.is_valid())
         self.assertIsInstance(serializer.save(), Workday)
 
 
-#=============================================================================
+# =============================================================================
 # API Views Test Cases
-#=============================================================================
+# =============================================================================
 
 
 class SuperuserAPITest(TestCase):
@@ -167,12 +167,12 @@ class SuperuserAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(validate_json_schema("user", response.data))
         self.assertEqual(response.data['first_name'], "Oscar")
-        response = self.client.get(url) # Unauthorized access
+        response = self.client.get(url)     # Unauthorized access
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # PUT method
         response = self.client.put(url, {'username': "ospa", 'first_name': "Bob"}, HTTP_AUTHORIZATION=self.auth)
-        
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['first_name'], "Bob")
         response = self.client.put(url, {})     # Unauthorized access
@@ -302,7 +302,7 @@ class UserAPITest(TestCase):
         url = reverse('user_detail', kwargs={'username': "ospa"})
         response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        
+
         # GET method
         url = reverse('user_detail', kwargs={'username': "non_admin"})
         response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
@@ -319,7 +319,7 @@ class UserAPITest(TestCase):
         url = reverse('user_workday_list', kwargs={'username': "jackboot7"})
         response = self.client.post(url, {}, HTTP_AUTHORIZATION=self.auth)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        
+
         # POST method
         url = reverse('user_workday_list', kwargs={'username': "non_admin"})
         response = self.client.post(url, {}, HTTP_AUTHORIZATION=self.auth)
