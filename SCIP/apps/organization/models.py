@@ -54,7 +54,6 @@ class OrgSettings(models.Model):
     def save(self, *args, **kwargs):
         # Removes all other entries if there are any
         self.__class__.objects.exclude(id=self.id).delete()
-        # super(OrgSettings, self).save(*args, **kwargs)
 
         # creates new checkout task
         if self.checkout_task is None:
@@ -70,7 +69,6 @@ class OrgSettings(models.Model):
                 queue="celery")
             ctask.save()
             self.checkout_task = ctask
-            
         else:
             ctask = self.checkout_task
             cron = ctask.crontab
@@ -93,7 +91,6 @@ class OrgSettings(models.Model):
                 queue="celery")
             rtask.save()
             self.reminder_task = rtask
-            #super(OrgSettings, self).save(*args, **kwargs)
         else:
             rtask = self.reminder_task
             cron = rtask.crontab

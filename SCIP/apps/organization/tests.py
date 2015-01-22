@@ -120,6 +120,15 @@ class WorkdayTestCase(TestCase):
         self.assertRaises(ValidationError, work2.clean)
 
 
+class OrgSettingsTestCase(TestCase):
+    def setUp(self):
+        self.settings = SettingsFactory()
+
+    def test_tasks_created(self):
+        self.assertIsNotNone(self.settings.checkout_task)
+        self.assertIsNotNone(self.settings.reminder_task)
+
+
 class CeleryTasksTestCase(TestCase):
     def setUp(self):
         self.settings = SettingsFactory()
@@ -165,6 +174,7 @@ class CeleryTasksTestCase(TestCase):
         work3.save()
 
         tasks.automatic_checkout()
+
         self.assertEqual(Workday.objects.get(id=work1.id).finish.time(), self.settings.default_checkout_time)
         self.assertIsNone(Workday.objects.get(id=work2.id).finish)
         self.assertEqual(Workday.objects.get(id=work3.id).finish.date().day, self.now.day)
