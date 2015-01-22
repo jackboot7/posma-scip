@@ -84,7 +84,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         def _workday_per_day(wd):
             """ Get the start time from the workday """
-            return wd.start
+            return wd.start.date()
 
         def _avg_per_day(wl):
             accum = 0.0
