@@ -28,9 +28,9 @@ def automatic_checkout():
 
     # get all unfinished workdays started before the automatic checkout date/time
     workdays = Workday.objects.filter(finish__isnull=True).filter(start__lt=verification_date)
-
     for wd in workdays:
         work_day = wd.start.date()
+
         # Cada workday se cierra con fecha del mismo día de iniciarse la jornada.
         # Si la hora de cierre por defecto es más temprana que la hora de inicio, se le suma un día.
         if default < wd.start.time():
