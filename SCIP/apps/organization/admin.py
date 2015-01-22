@@ -17,7 +17,7 @@ class UserAdmin(UserAdmin):
 
 
 class OrgSettingsAdmin(admin.ModelAdmin):
-    exclude = ('periodic_task',)
+    exclude = ('checkout_task', 'reminder_task')
 
 
 admin.site.register(OrgSettings, OrgSettingsAdmin)
