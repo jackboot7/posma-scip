@@ -18,7 +18,7 @@ class WorkdaySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workday
-        fields = ('id', 'user', 'start', 'finish', 'hours_worked', 'user_notes')
+        fields = ('id', 'user', 'start', 'finish', 'hours_worked', 'user_notes', 'user_agent')
 
     def restore_object(self, attrs, instance=None):
         """

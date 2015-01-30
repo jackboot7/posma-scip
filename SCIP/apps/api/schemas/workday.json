@@ -22,6 +22,10 @@
         "user": {
             "type":"string",
             "required":false
+        },
+        "user_agent": {
+            "type":["string", "null"],
+            "required": false
         }
     }
 }
