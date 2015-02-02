@@ -103,6 +103,9 @@ class UserWorkdaysView(CsrfExemptMixin, APIView):
         data = copy.deepcopy(request.DATA)
         data['user'] = username
 
+        if 'latitude' in data and 'longitude' in data:
+            data['location'] = "%s,%s" % (data['latitude'], data['longitude'])
+
         serializer = WorkdaySerializer(data=data)
         if serializer.is_valid():
             serializer.save()

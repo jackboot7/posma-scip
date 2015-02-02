@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 from djcelery.models import PeriodicTask, CrontabSchedule
+from geoposition.fields import GeopositionField
 
 
 #===============================================================================
@@ -143,6 +144,8 @@ class Workday(models.Model):
     user_notes = models.CharField(null=True, blank=True, max_length=256)
     staff_notes = models.CharField(null=True, blank=True, max_length=256)
     edited = models.BooleanField(default=False)
+
+    location = GeopositionField(blank=True, null=True)
 
     # model manager
     objects = WorkdayManager()

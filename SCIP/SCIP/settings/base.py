@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'braces',
     'crispy_forms',
     'djcelery',
+    'geoposition',
 
     # Project applications/modules
     'apps.organization',
