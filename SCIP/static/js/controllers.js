@@ -82,7 +82,6 @@ scipControllers.controller('CheckinController',['$scope', '$rootScope', '$locati
                     if(!$scope.checked){
                         // Llamada al API para hacer checkin
                         // Si el usuario no ha hecho checkin, se muestra el botón y se usa Checkin.checkin()
-                        alert($scope.longitude);
                         Checkin.checkin({username:username, user_notes:$scope.notes, user_agent:navigator.userAgent, latitude:$scope.latitude, longitude:$scope.longitude},
                                 function(data){
                                     // éxito en checkin
