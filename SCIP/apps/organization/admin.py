@@ -21,7 +21,7 @@ class OrgSettingsAdmin(admin.ModelAdmin):
 
 
 class WorkdayAdmin(admin.ModelAdmin):
-    list_display = ('user', 'start', 'finish', 'user_notes', 'staff_notes')
+    list_display = ('user', 'start', 'finish', 'user_notes', 'staff_notes', 'user_agent')
 
 
 admin.site.register(OrgSettings, OrgSettingsAdmin)
