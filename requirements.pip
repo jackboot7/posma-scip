@@ -19,4 +19,4 @@ factory-boy==2.4.1
 jsonschema==2.4.0
 celery==3.1.17
 django-celery==3.1.16
-
+django-geoposition==0.2.2
