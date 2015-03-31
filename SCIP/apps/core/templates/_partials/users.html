@@ -12,19 +12,27 @@
     </form>
 </div>
 <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-10">
         <table class="table table-hover">
-            <tr><th>Usuario</th>
-                <th>Última vez visto</th>
-                <th>Promedio de horas diarias</th>
-            </tr>
+
             {% verbatim %}
-            <tr ng-repeat="user in users | filter:query">
+            <tr>
+                <th><a href="" ng-click="predicate = 'first_name'; reverse=!reverse">Usuario</a></th>
+                <th><a href="" ng-click="predicate = 'last_workday.start'; reverse=!reverse">Última vez visto</a></th>
+                <th><a href="" ng-click="predicate = 'average_hours_worked'; reverse=!reverse">Promedio de horas diarias</a></th>
+                <th><a href="" ng-click="predicate = 'total_hours_worked'; reverse=!reverse">Total de horas</a></th>
+                <th><a href="" ng-click="predicate = 'total_days_worked'; reverse=!reverse">Total de días</a></th>
+            </tr>
+
+            <tr ng-repeat="user in users | filter:query  | orderBy:predicate:reverse">
                 <td><a href="users/{{ user.username }}">{{ user.first_name }} {{ user.last_name }}</a></td>
                 <td>{{ user.last_workday.start | date:'short' }} </td>
                <td>{{ user.average_hours_worked | number:2 }}</td>
+               <td>{{ user.total_hours_worked | number:2 }}</td>
+               <td>{{ user.total_days_worked | number }}</td>
             </tr>
             {% endverbatim %}
+
         </table>
         <!--
         <nav>

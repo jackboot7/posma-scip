@@ -123,6 +123,8 @@ scipControllers.controller('UserListController', ['$scope', '$rootScope', '$loca
         $location.path('/404');
     }
 
+    $scope.predicate = '-last_workday.start';
+
     // La conexión con el API se hace sólo para usuarios loggeados.
     Users.get(
             function(data){

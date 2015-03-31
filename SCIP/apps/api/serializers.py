@@ -57,11 +57,13 @@ class UserSerializer(serializers.ModelSerializer):
     is_working = serializers.SerializerMethodField('get_is_working')
     average_hours_worked = serializers.SerializerMethodField('get_avg_hours_worked')
     user_id = serializers.IntegerField(source='pk', required=False)
+    total_hours_worked = serializers.SerializerMethodField('get_total_hours_worked')
+    total_days_worked = serializers.SerializerMethodField('get_total_days_worked')
 
     class Meta:
         model = auth.models.User
         fields = ('user_id', 'username', 'first_name', 'last_name', 'email', 'last_workday', 'is_working',
-                  'average_hours_worked', 'is_staff')
+                  'average_hours_worked', 'total_hours_worked', 'total_days_worked', 'is_staff')
 
     def get_last_workday(self, obj):
         try:
@@ -104,3 +106,48 @@ class UserSerializer(serializers.ModelSerializer):
         workday_list = [list(g) for t, g in groupby(workdays, _workday_per_day)]
 
         return sum([_avg_per_day(wl) for wl in workday_list])/len(workday_list)
+
+    def get_total_hours_worked(self, obj):
+        """ We use itertools to group the different days """
+        from itertools import groupby
+
+        def _workday_per_day(wd):
+            """ Get the start time from the workday """
+            return wd.start.date()
+
+        def _hours_per_day(wl):
+            accum = 0.0
+            for wd in wl:
+                if wd.hours_worked:
+                    accum = accum + wd.hours_worked
+            return accum
+
+        # Exclude open workdays for the average.
+        workdays = obj.workday_set.all().order_by('start').exclude(finish__isnull=True)
+
+        if workdays.count() == 0:
+            return 0
+
+        # we calculate a list of workdays list, grouped by day.
+        workday_list = [list(g) for t, g in groupby(workdays, _workday_per_day)]
+
+        return sum([_hours_per_day(wl) for wl in workday_list])
+
+    def get_total_days_worked(self, obj):
+        """ We use itertools to group the different days """
+        from itertools import groupby
+
+        def _workday_per_day(wd):
+            """ Get the start time from the workday """
+            return wd.start.date()
+
+        # Exclude open workdays for the average.
+        workdays = obj.workday_set.all().order_by('start').exclude(finish__isnull=True)
+
+        if workdays.count() == 0:
+            return 0
+
+        # we calculate a list of workdays list, grouped by day.
+        workday_list = [list(g) for t, g in groupby(workdays, _workday_per_day)]
+        return len(workday_list)
+

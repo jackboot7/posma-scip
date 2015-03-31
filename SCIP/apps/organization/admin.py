@@ -17,13 +17,17 @@ class UserAdmin(UserAdmin):
 
 
 class OrgSettingsAdmin(admin.ModelAdmin):
-    exclude = ('periodic_task',)
+    exclude = ('checkout_task', 'reminder_task')
+
+
+class WorkdayAdmin(admin.ModelAdmin):
+    list_display = ('user', 'start', 'finish', 'user_notes', 'staff_notes', 'user_agent')
 
 
 admin.site.register(OrgSettings, OrgSettingsAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-admin.site.register(Workday)
+admin.site.register(Workday, WorkdayAdmin)
 
 admin.site.unregister(TaskState)
 admin.site.unregister(WorkerState)
