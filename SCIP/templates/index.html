@@ -35,7 +35,7 @@
             </div>
             <!-- Enlace de inicio de sesión/menu de usuario -->
             <div class="collapse navbar-collapse" id="menu-colapsado">
-                  <ul class="nav navbar-nav navbar-right">
+                  <ul class="nav navbar-nav navbar-right" ng-cloak>
                     <li ng-hide="logged" ><a href="/login/">Iniciar Sesión en Posma</a></li>
                     <li ng-show="logged" ng-click='logout()' ><a href="#">Cerrar Sesión</a></li>
                   </ul>
@@ -46,7 +46,7 @@
     <div class="container-fluid">
 
         <div class="row">
-            <div class="col-sm-2" ng-show="logged" ngCloak>
+            <div class="col-sm-2" ng-show="logged" ng-cloak>
                 <br>
                 <ul>
                     <li><span><a href="/">Inicio</a></span></li>
@@ -54,7 +54,7 @@
                     <li><span><a href="/workdays/">Historial</a></span></li>
                 </ul>            
             </div>
-            <div class="col-sm-10" ng-view></div>
+            <div class="col-sm-10" ng-view ng-cloak></div>
         </div>
         
     </div>
