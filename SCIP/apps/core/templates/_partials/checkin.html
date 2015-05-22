@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" ng-cloak>
     {% verbatim %}
     <div class="col-sm-4"><h1>Bienvenid@, {{ first_name }}.</h1></div>
     {% endverbatim %}
@@ -39,7 +39,7 @@
 </div>
 
 <div class="row" ng-show="checked">
-    <div class="col-sm-4">
+    <div class="col-sm-4" ng-cloak>
     {% verbatim %}
         <span>Jornada iniciada el {{ workday_started | date: "dd/MM/yyyy" }} a las {{ workday_started | date: "h:mm a" }}</span>
     {% endverbatim %}
