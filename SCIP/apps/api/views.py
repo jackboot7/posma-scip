@@ -70,6 +70,18 @@ class SpecificUserView(CsrfExemptMixin, APIView):
     """
 
 
+class UserBirthdaysView(CsrfExemptMixin, APIView):
+    """
+    /users/birthdays/ endpoint view
+    """
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrAdmin)
+
+    def get(self, request, format=None):
+        users = User.objects.exclude(is_superuser=True)
+        serializer = BirthdaysSerializer(users, many=True)
+        return Response(serializer.data)
+
+
 class UserWorkdaysView(CsrfExemptMixin, APIView):
     """
     /users/{username}/workdays/ endpoint view
