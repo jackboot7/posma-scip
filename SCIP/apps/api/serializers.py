@@ -1,3 +1,5 @@
+# -*- coding:utf8 -*-
+
 import pytz
 from datetime import datetime
 
@@ -6,6 +8,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 
 from apps.organization.models import *
+
+
+class BirthdaySerializer(serializers.ModelSerializer):
+    # TODO: Implementar el serializador para cumpleaños.
+    pass
 
 
 class WorkdaySerializer(serializers.ModelSerializer):
