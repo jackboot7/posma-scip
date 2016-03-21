@@ -2,14 +2,14 @@
     "use strict";
 
     angular.module('app.scip')
-    .controller('404Controller',404Controller)
+    .controller('Four04Controller',Four04Controller)
     .controller('LoginController',LoginController)
     .controller('CheckinController',CheckinController)
     .controller('UserListController',UserListController)
     .controller('WorkdayListController',WorkdayListController)
 
-    404Controller.$inject = ['$scope', '$window', '$route', '$routeParams', '$rootScope', '$location']; 
-    function 404Controller($scope, $window, $route, $routeParams, $rootScope, $location)
+    Four04Controller.$inject = ['$scope', '$window', '$route', '$routeParams', '$rootScope', '$location']; 
+    function Four04Controller($scope, $window, $route, $routeParams, $rootScope, $location)
     {
         if($window.sessionStorage.token){
            // console.log("este es el token: " + $window.sessionStorage.token);
