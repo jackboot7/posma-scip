@@ -2,48 +2,7 @@
     "use strict";
 
     angular.module('app.scip')
-    .controller('Four04Controller',Four04Controller)
-    .controller('LoginController',LoginController)
     .controller('CheckinController',CheckinController)
-    .controller('UserListController',UserListController)
-    .controller('WorkdayListController',WorkdayListController)
-
-    Four04Controller.$inject = ['$scope', '$window', '$route', '$routeParams', '$rootScope', '$location']; 
-    function Four04Controller($scope, $window, $route, $routeParams, $rootScope, $location)
-    {
-        if($window.sessionStorage.token){
-           // console.log("este es el token: " + $window.sessionStorage.token);
-        }else{
-            console.log("no tiene token!");
-        }
-    };
-
-    LoginController.$inject = ['$scope', '$window', '$rootScope', '$location', 'Login', 'User', 'jwtHelper'];
-    function LoginController($scope, $window, $rootScope, $location, Login, User, jwtHelper)
-    {
-
-        $scope.login = function() {
-            Login.post(
-                    {username:$scope.username, password:$scope.password},
-
-                    function(data){
-                        var user_obj = jwtHelper.decodeToken(data.token)
-                        $window.sessionStorage.token = data.token;
-                        $window.sessionStorage.user = JSON.stringify(user_obj);
-                        $rootScope.logged = true;
-                        $rootScope.is_staff = user_obj.is_staff;
-                        $location.path('/');
-                    }, 
-
-                    function(data){
-                        console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
-                        delete $window.sessionStorage.token;
-                        delete $window.sessionStorage.user;
-                        $rootScope.logged = false;
-                        $rootScope.is_staff = false;
-                    });
-        }
-    };
 
     CheckinController.$inject = ['$scope', '$rootScope', '$location', '$window', 'User', 'Checkin']; 
     function CheckinController($scope, $rootScope, $location, $window, User, Checkin)
@@ -120,48 +79,6 @@
                                     });
                         }
                     }
-                },
-                function(data){
-                    console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
-                });
-    };
-
-
-    UserListController.$inject = ['$scope', '$rootScope', '$location', '$window', 'Users'];
-    function UserListController($scope, $rootScope, $location, $window, Users)
-    {
-
-        if (!$rootScope.logged){
-            $location.path('/login');
-        }
-        if (!angular.fromJson($window.sessionStorage.user).is_staff) {
-            $location.path('/404');
-        }
-
-        $scope.predicate = '-last_workday.start';
-
-        // La conexión con el API se hace sólo para usuarios loggeados.
-        Users.get(
-                function(data){
-                    $scope.users = data;
-                },
-                function(data){
-                    console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
-                });
-    };
-
-    WorkdayListController.$inject = ['$scope', '$rootScope', '$location', '$routeParams', '$window', 'Workdays']; 
-    function WorkdayListController($scope, $rootScope, $location, $routeParams, $window, Workdays)
-    {
-            
-        if (!$rootScope.logged){
-            $location.path('/login');
-        }
-            
-        $scope.username = ($routeParams.username)? $routeParams.username : angular.fromJson($window.sessionStorage.user).username;
-        Workdays.get({username: $scope.username},
-                function(data){
-                    $scope.workdays = data;
                 },
                 function(data){
                     console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
