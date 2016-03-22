@@ -30,7 +30,7 @@
         $scope.getClass = function(user){
             var current_date = new Date();
             var date = new Date(user.last_workday.start);
-            if (date.toDateString() < current_date.toDateString()){
+            if (date < current_date){
                 return { nochecked: true };
             }
         }
