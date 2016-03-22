@@ -19,7 +19,7 @@ class UsersView(CsrfExemptMixin, APIView):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
 
     def get(self, request, format=None):
-        users = User.objects.exclude(is_superuser=True)
+        users = User.objects.exclude(is_superuser=True).exclude(is_active=False)
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
