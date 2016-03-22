@@ -23,8 +23,16 @@
                     $scope.users = data;
                 },
                 function(data){
+                    console.log(data);
                     console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
                 });
+
+        $scope.getClass = function(user){
+            var current_date = Date();
+            if (user.last_workday.start < current_date){
+                return { nochecked: true };
+            }
+        }
     };
 
 })();

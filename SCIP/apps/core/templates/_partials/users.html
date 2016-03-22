@@ -24,7 +24,7 @@
                 <th><a href="" ng-click="predicate = 'total_days_worked'; reverse=!reverse">Total de días</a></th>
             </tr>
 
-            <tr ng-repeat="user in users | filter:query  | orderBy:predicate:reverse">
+            <tr ng-repeat="user in users | filter:query  | orderBy:predicate:reverse" data-ng-class="getClass(user)" >
                 <td><a href="users/{{ user.username }}">{{ user.first_name }} {{ user.last_name }}</a></td>
                 <td>{{ user.last_workday.start | date:'short' }} </td>
                <td>{{ user.average_hours_worked | number:2 }}</td>

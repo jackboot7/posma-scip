@@ -5,3 +5,11 @@
 .no-resize { 
     resize:none !important; 
 }
+
+.nochecked {
+    background-color: #fb644f;
+}
+
+.nochecked a {
+    color: #FFF;
+}
