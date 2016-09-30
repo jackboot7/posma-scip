@@ -21,6 +21,7 @@
         Users.get(
                 function(data){
                     $scope.users = data;
+                    console.log($scope.users);
                 },
                 function(data){
                     console.log(data);
@@ -33,6 +34,16 @@
             if (date < current_date.setHours(0,0,0,0)){
                 return { nochecked: true };
             }
+        }
+
+        $scope.showStart = function(user){
+            if (user.last_workday.finish == null){
+                return true;
+            }
+        }
+
+        $scope.showFinish = function(user){
+            return !$scope.showStart(user);
         }
     };
 

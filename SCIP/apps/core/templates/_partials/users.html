@@ -26,10 +26,11 @@
 
             <tr ng-repeat="user in users | filter:query  | orderBy:predicate:reverse" data-ng-class="getClass(user)" >
                 <td><a href="users/{{ user.username }}">{{ user.first_name }} {{ user.last_name }}</a></td>
-                <td>{{ user.last_workday.start | date:'short' }} </td>
-               <td>{{ user.average_hours_worked | number:2 }}</td>
-               <td>{{ user.total_hours_worked | number:2 }}</td>
-               <td>{{ user.total_days_worked | number }}</td>
+                <td ng-if="showStart(user)"> {{ user.last_workday.start | date:'short' }} </td>
+                <td ng-if="showFinish(user)"> {{ user.last_workday.finish | date:'short' }} </td>
+                <td>{{ user.average_hours_worked | number:2 }}</td>
+                <td>{{ user.total_hours_worked | number:2 }}</td>
+                <td>{{ user.total_days_worked | number }}</td>
             </tr>
             {% endverbatim %}
 
