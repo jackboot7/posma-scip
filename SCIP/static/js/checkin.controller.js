@@ -9,6 +9,7 @@
     {
 
         var user_obj, username;
+        $scope.checkout = false;
 
         if(!$rootScope.logged){
             $location.path('/login');
@@ -73,6 +74,7 @@
                                         $scope.checked = !$scope.checked;
                                         $scope.workday_finished = data.finish;
                                         $scope.notes = "";
+                                        $scope.checkout = true;
                                     },
                                     function(data){
                                         console.log("Problema con la conexión del API. Mostrar mensaje de error y redireccionar.");
